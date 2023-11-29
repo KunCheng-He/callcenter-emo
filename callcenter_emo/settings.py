@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
-from config import mysql_config
+from .config import mysql_config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',    # REST API
+    'apps.accounts',     # 自定义用户、角色
+    'apps.email_login',  # 改用邮箱登录
 ]
 
 MIDDLEWARE = [
@@ -84,6 +86,11 @@ DATABASES = {
     'default': mysql_config
 }
 
+# 使用自定义的用户模型
+AUTH_USER_MODEL = "accounts.CustomUser"
+
+# 改用邮箱进行验证登录
+AUTHENTICATION_BACKENDS = ['apps.email_login.models.CustomModelBackend']
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
