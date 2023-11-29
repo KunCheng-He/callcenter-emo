@@ -106,3 +106,4 @@ venv.bak/
 # 自定义
 *.code-workspace
 callcenter_emo/config.py
+.idea
