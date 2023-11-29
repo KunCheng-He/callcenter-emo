@@ -105,4 +105,4 @@ venv.bak/
 
 # 自定义
 *.code-workspace
-CallCenter_SER_Backend/myconfig.py
+callcenter_emo/config.py
