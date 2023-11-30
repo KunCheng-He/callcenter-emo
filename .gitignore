@@ -107,3 +107,4 @@ venv.bak/
 *.code-workspace
 callcenter_emo/config.py
 .idea/
+.vscode/
