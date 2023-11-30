@@ -19,12 +19,13 @@ from django.urls import path, include
 from rest_framework import routers
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
-from apps.accounts.views import UserRoleViewSet
+from apps.accounts.views import UserRoleViewSet, UserViewSet
 
 
 # 创建 apps 里应用的路由并注册
 router = routers.DefaultRouter()
 router.register('roles', UserRoleViewSet)  # 角色路由
+router.register('users', UserViewSet)      # 用户路由
 
 urlpatterns = [
     path('admin/', admin.site.urls),
