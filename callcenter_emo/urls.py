@@ -17,15 +17,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 from apps.accounts.views import UserRoleViewSet
 
 
 # 创建 apps 里应用的路由并注册
 router = routers.DefaultRouter()
-router.register('roles', UserRoleViewSet)
+router.register('roles', UserRoleViewSet)  # 角色路由
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),  # swagger接口文档
+    path('api-doc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),  # redoc接口文档
     path('', include(router.urls)),  # apps 中应用的路由
 ]

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',    # REST API
     'apps.accounts',     # 自定义用户、角色
     'apps.email_login',  # 改用邮箱登录
+    'drf_spectacular',   # OpenAPI
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,17 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# REST API 配置
+REST_FRAMEWORK = {
+    # 默认架构类
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# API 元数据设置
+SPECTACULAR_SETTINGS = {
+    'TITLE': '呼叫中心智能质检 API',
+    'DESCRIPTION': '该项目分两个模块，智能质检部分通过模型对语音情感进行识别，给出一定的质检分析，第二部分让用户审计模型的识别结果，将错误内容剪辑成新的片段，以此加大训练模型的数据量',
+    'VERSION': '0.0.1',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
