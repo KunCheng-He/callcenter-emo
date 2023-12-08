@@ -1,21 +1,29 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
+
+const radio1 = ref('1')
 </script>
 
 <template>
-  <header>
+  <!-- <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
-
+      <h1>加在这每个都有</h1>
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
       </nav>
     </div>
-  </header>
+  </header> -->
+
+  <el-radio-group v-model="radio1" class="ml-4">
+    <el-radio label="1" size="large">Option 1</el-radio>
+    <el-radio label="2" size="large">Option 2</el-radio>
+  </el-radio-group>
 
   <RouterView />
 </template>

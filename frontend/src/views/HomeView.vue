@@ -6,4 +6,5 @@ import TheWelcome from '../components/TheWelcome.vue'
   <main>
     <TheWelcome />
   </main>
+  <h1>这是额外的内容</h1>
 </template>
