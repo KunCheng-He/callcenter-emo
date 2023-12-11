@@ -25,6 +25,8 @@ const radio1 = ref('1')
     <el-radio label="2" size="large">Option 2</el-radio>
   </el-radio-group>
 
+  <SvgIcon name="callcenter"></SvgIcon>
+
   <RouterView />
 </template>
 
