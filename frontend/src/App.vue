@@ -20,12 +20,12 @@ const radio1 = ref('1')
     </div>
   </header> -->
 
-  <el-radio-group v-model="radio1" class="ml-4">
+  <!-- <el-radio-group v-model="radio1" class="ml-4">
     <el-radio label="1" size="large">Option 1</el-radio>
     <el-radio label="2" size="large">Option 2</el-radio>
   </el-radio-group>
 
-  <SvgIcon name="callcenter"></SvgIcon>
+  <SvgIcon name="callcenter"></SvgIcon> -->
 
   <RouterView />
 </template>
