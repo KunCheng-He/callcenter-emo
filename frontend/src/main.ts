@@ -1,4 +1,4 @@
-import './assets/main.css'
+import './assets/styles/index.scss'  // 引入全局样式
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -6,6 +6,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import ElementPlus from 'element-plus'
+// import '@/assets/styles/element-variables.scss'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import 'virtual:svg-icons-register'
 import globalComponent from '@/components'  // 全局组件
