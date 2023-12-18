@@ -25,10 +25,11 @@ export const useUserStore = defineStore("user", () => {
     roles.value = value
   }
   /** 登录 */
-  const login = async ({ username, password, code }: LoginRequestData) => {
-    const { data } = await loginApi({ username, password, code })
-    setToken(data.token)
-    token.value = data.token
+  const login = async ({ username, password }: LoginRequestData) => {
+    console.log(username, password)
+    // const { data } = await loginApi({ username, password })
+    // setToken(data.token)
+    // token.value = data.token
   }
   /** 获取用户详情 */
   const getInfo = async () => {
