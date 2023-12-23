@@ -18,8 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
-from apps.accounts.views import UserRoleViewSet, UserViewSet
+from apps.accounts.views import UserRoleViewSet, UserViewSet, LoginView
 
 
 # 创建 apps 里应用的路由并注册
@@ -32,5 +33,9 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),  # swagger接口文档
     path('api-doc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),  # redoc接口文档
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # 获取Token的接口
+    path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # 刷新Token有效期的接口
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),  # 验证Token的有效性
+    path('login/', LoginView.as_view(), name='login'),
     path('', include(router.urls)),  # apps 中应用的路由
 ]

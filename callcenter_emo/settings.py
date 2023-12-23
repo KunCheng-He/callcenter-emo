@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import datetime
 from pathlib import Path
 
 from .config import mysql_config
@@ -136,8 +137,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST API 配置
 REST_FRAMEWORK = {
-    # 默认架构类
+    # 默认架构类(openapi文档)
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # 使用rest_framework_simplejwt验证身份
+        'rest_framework.authentication.SessionAuthentication',  # 次要进行session认证
+        'rest_framework.authentication.BasicAuthentication'  # 测试的时候需要使用基本认证
+    ]
 }
 
 # API 元数据设置
@@ -146,4 +152,12 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': '该项目分两个模块，智能质检部分通过模型对语音情感进行识别，给出一定的质检分析，第二部分让用户审计模型的识别结果，将错误内容剪辑成新的片段，以此加大训练模型的数据量',
     'VERSION': '0.0.1',
     'SERVE_INCLUDE_SCHEMA': False,
+}
+
+# simplejwt 配置
+SIMPLE_JWT = {
+    # token有效时长
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
+    # token刷新后的有效时间
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
 }
