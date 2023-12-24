@@ -72,4 +72,6 @@ class TokenSerializer(TokenObtainPairSerializer):
         data['username'] = self.user.username
         # 邮箱
         data['email'] = self.user.email
+        # id
+        data['id'] = self.user.id
         return data
