@@ -15,6 +15,7 @@ export const useUserStore = defineStore("user", () => {
   const token = ref<string>(getToken() || "")
   const roles = ref<string[]>([])
   const username = ref<string>("")
+  const userid = ref<number>()
 
   const permissionStore = usePermissionStore()
   const tagsViewStore = useTagsViewStore()
@@ -26,14 +27,15 @@ export const useUserStore = defineStore("user", () => {
   }
   /** 登录 */
   const login = async ({ username, password }: LoginRequestData) => {
-    console.log(username, password)
-    // const { data } = await loginApi({ username, password })
-    // setToken(data.token)
-    // token.value = data.token
+    const data = await loginApi({ username, password })
+    // 下方异常不用管
+    setToken(data.token)
+    token.value = data.token
+    userid.value = data.id
   }
   /** 获取用户详情 */
   const getInfo = async () => {
-    const { data } = await getUserInfoApi()
+    const data = await getUserInfoApi(userid.value)
     username.value = data.username
     // 验证返回的 roles 是否为一个非空数组，否则塞入一个没有任何作用的默认角色，防止路由守卫逻辑进入无限循环
     roles.value = data.roles?.length > 0 ? data.roles : routeSettings.defaultRoles

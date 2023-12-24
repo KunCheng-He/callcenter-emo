@@ -28,25 +28,7 @@ function createService() {
       // 二进制数据则直接返回
       const responseType = response.request?.responseType
       if (responseType === "blob" || responseType === "arraybuffer") return apiData
-      // 这个 code 是和后端约定的业务 code
-      const code = apiData.code
-      // 如果没有 code, 代表这不是项目后端开发的 api
-      if (code === undefined) {
-        ElMessage.error("非本系统的接口")
-        return Promise.reject(new Error("非本系统的接口"))
-      }
-      switch (code) {
-        case 0:
-          // 本系统采用 code === 0 来表示没有业务错误
-          return apiData
-        case 401:
-          // Token 过期时
-          return logout()
-        default:
-          // 不是正确的 code
-          ElMessage.error(apiData.message || "Error")
-          return Promise.reject(new Error("Error"))
-      }
+      return apiData
     },
     (error) => {
       // status 是 HTTP 状态码
@@ -107,7 +89,8 @@ function createRequest(service: AxiosInstance) {
         "Content-Type": "application/json"
       },
       timeout: 5000,
-      baseURL: import.meta.env.VITE_BASE_API,
+      // baseURL: import.meta.env.VITE_BASE_API,
+      baseURL: "http://127.0.0.1:8000/",
       data: {}
     }
     // 将默认配置 defaultConfig 和传入的自定义配置 config 进行合并成为 mergeConfig
