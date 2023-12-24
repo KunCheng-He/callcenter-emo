@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',       # 跨域支持
     'rest_framework',    # REST API
     'apps.accounts',     # 自定义用户、角色
     'apps.email_login',  # 改用邮箱登录
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # 跨域
 ]
 
 ROOT_URLCONF = 'callcenter_emo.urls'
@@ -161,3 +163,9 @@ SIMPLE_JWT = {
     # token刷新后的有效时间
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
 }
+
+# 跨域支持
+CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5173', 'http://172.18.254.166:5173']  # 授权进行跨站点 HTTP 请求的源列表
+# 因为跨域之后需要传递sessionid 到浏览器cookie，所以添加如下配置。
+CORS_ALLOW_CREDENTIALS = True  # 允许 Cookie 包含在跨站点 HTTP 请求中
+SESSION_COOKIE_SAMESITE = None  # django 自己的安全策略
