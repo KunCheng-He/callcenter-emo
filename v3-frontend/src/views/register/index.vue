@@ -1,12 +1,15 @@
 <script lang="ts" setup>
 import { onBeforeMount, reactive, ref } from "vue"
+import { useRouter } from "vue-router"
 import { type FormInstance, type FormRules } from "element-plus"
 import { Message, Lock, User } from "@element-plus/icons-vue"
+import { ElMessageBox } from "element-plus"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import { getUserRoleApi } from "@/api/user-role"
+import { addUserApi } from "@/api/user"
 import { type RoleData } from "@/api/user-role/types/role"
 
-// const router = useRouter()
+const router = useRouter()
 
 // 角色列表
 const roleList = ref<RoleData[]>([])
@@ -41,22 +44,26 @@ const registerFormRules: FormRules = {
 }
 /** 注册逻辑 */
 const handleRegister = () => {
-  registerFormRef.value?.validate((valid: boolean, fields) => {
-    console.log(registerFormData)
+  registerFormRef.value?.validate(async (valid: boolean, fields) => {
     if (valid) {
-      console.log("表单校验通过", fields, registerFormData)
-      // loading.value = true
-      // useUserStore()
-      //   .login(loginFormData)
-      //   .then(() => {
-      //     router.push({ path: "/" })
-      //   })
-      //   .catch(() => {
-      //     loginFormData.password = ""
-      //   })
-      //   .finally(() => {
-      //     loading.value = false
-      //   })
+      loading.value = true
+      try {
+        // console.log(registerFormData)
+        await addUserApi(registerFormData)
+        router.push({ path: "/login" })
+      } catch (error) {
+        // 我也不知道这里为什么提示 error 没有定义
+        if (error.response.data?.email !== undefined) {
+          ElMessageBox.alert(error.response.data.email[0], "错误", {
+            confirmButtonText: "OK"
+          })
+        }
+        registerFormData.email = ""
+        registerFormData.password = ""
+        registerFormData.username = ""
+        registerFormData.role = ""
+      }
+      loading.value = false
     } else {
       console.error("表单校验不通过", fields)
     }
