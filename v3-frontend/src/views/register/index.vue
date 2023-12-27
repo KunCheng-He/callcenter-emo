@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import { reactive, ref } from "vue"
-// import { useRouter } from "vue-router"
-// import { useUserStore } from "@/store/modules/user"
+import { onBeforeMount, reactive, ref } from "vue"
 import { type FormInstance, type FormRules } from "element-plus"
 import { Message, Lock, User } from "@element-plus/icons-vue"
-// import { getLoginCodeApi } from "@/api/login"
-// import { type LoginRequestData } from "@/api/login/types/login"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
+import { getUserRoleApi } from "@/api/user-role"
+import { type RoleData } from "@/api/user-role/types/role"
 
 // const router = useRouter()
+
+// 角色列表
+const roleList = ref<RoleData[]>([])
 
 /** 注册表单元素的引用 */
 const registerFormRef = ref<FormInstance | null>(null)
@@ -41,6 +42,7 @@ const registerFormRules: FormRules = {
 /** 注册逻辑 */
 const handleRegister = () => {
   registerFormRef.value?.validate((valid: boolean, fields) => {
+    console.log(registerFormData)
     if (valid) {
       console.log("表单校验通过", fields, registerFormData)
       // loading.value = true
@@ -60,6 +62,19 @@ const handleRegister = () => {
     }
   })
 }
+/** 获取角色列表 */
+const getUserRole = async () => {
+  try {
+    roleList.value = await getUserRoleApi()
+  } catch (error) {
+    console.error("获取用户角色列表失败", error)
+  }
+}
+
+// 在页面加载前调用的方法
+onBeforeMount(() => {
+  getUserRole() // 获取角色列表
+})
 </script>
 
 <template>
@@ -95,6 +110,11 @@ const handleRegister = () => {
               :prefix-icon="User"
               size="large"
             />
+          </el-form-item>
+          <el-form-item prop="role">
+            <el-select v-model="registerFormData.role" placeholder="选择角色">
+              <el-option v-for="item in roleList" :key="item.url" :label="item.name" :value="item.url" />
+            </el-select>
           </el-form-item>
           <el-form-item prop="password">
             <el-input
