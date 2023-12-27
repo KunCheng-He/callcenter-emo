@@ -51,8 +51,7 @@ const handleRegister = () => {
         // console.log(registerFormData)
         await addUserApi(registerFormData)
         router.push({ path: "/login" })
-      } catch (error) {
-        // 我也不知道这里为什么提示 error 没有定义
+      } catch (error: any) {
         if (error.response.data?.email !== undefined) {
           ElMessageBox.alert(error.response.data.email[0], "错误", {
             confirmButtonText: "OK"
