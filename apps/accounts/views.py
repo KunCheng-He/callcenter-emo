@@ -33,6 +33,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """重写该方法，注册新用户时对password进行加密"""
+        request.POST._mutable = True  # 解决请求对象不可更改的问题
         request.data["password"] = make_password(request.data.get("password"))
         return super().create(request, *args, **kwargs)
     
