@@ -52,12 +52,6 @@ const handleLogin = () => {
     }
   })
 }
-
-/** 测试注册 */
-const temp = () => {
-  console.log("测试注册")
-  router.push({ path: "/register" })
-}
 </script>
 
 <template>
@@ -91,7 +85,7 @@ const temp = () => {
             />
           </el-form-item>
           <!-- 注册页面 跳转超链接 -->
-          <el-button :loading="loading" type="primary" size="large" @click.prevent="temp">注册</el-button>
+          <router-link to="/register" :style="{ color: '#409EFF' }">注 册</router-link>
           <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">登 录</el-button>
         </el-form>
       </div>
