@@ -69,22 +69,38 @@ export const constantRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  // {
-  //   path: "/unocss",
-  //   component: Layouts,
-  //   redirect: "/unocss/index",
-  //   children: [
-  //     {
-  //       path: "index",
-  //       component: () => import("@/views/unocss/index.vue"),
-  //       name: "UnoCSS",
-  //       meta: {
-  //         title: "UnoCSS",
-  //         svgIcon: "unocss"
-  //       }
-  //     }
-  //   ]
-  // },
+  {
+    path: "/uploadaudio",
+    component: Layouts,
+    redirect: "/uploadaudio/index",
+    children: [
+      {
+        path: "index",
+        component: () => import("@/views/upload-audio/index.vue"),
+        name: "UploadAudio",
+        meta: {
+          title: "音频上传",
+          svgIcon: "upload"
+        }
+      }
+    ]
+  },
+  {
+    path: "/unocss",
+    component: Layouts,
+    redirect: "/unocss/index",
+    children: [
+      {
+        path: "index",
+        component: () => import("@/views/unocss/index.vue"),
+        name: "UnoCSS",
+        meta: {
+          title: "UnoCSS",
+          svgIcon: "unocss"
+        }
+      }
+    ]
+  },
   {
     path: "/link",
     meta: {
