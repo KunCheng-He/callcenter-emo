@@ -14,11 +14,13 @@ import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import Screenfull from "@/components/Screenfull/index.vue"
 import SearchMenu from "@/components/SearchMenu/index.vue"
 import { DeviceEnum } from "@/constants/app-key"
+import { getUserInfo } from "@/utils/cache/cookies"
 
 const router = useRouter()
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const userStore = useUserStore()
+const userInfo = getUserInfo()
 
 const { sidebar, device } = storeToRefs(appStore)
 const { layoutMode, showNotify, showThemeSwitch, showScreenfull, showSearchMenu } = storeToRefs(settingsStore)
@@ -51,8 +53,7 @@ const logout = () => {
       <el-dropdown class="right-menu-item">
         <div class="right-menu-avatar">
           <!-- <el-avatar :icon="UserFilled" :size="30" /> -->
-          <!-- 提示该值可能没有被定义 -->
-          <span>{{ userStore.userinfo.username }}</span>
+          <span>{{ userInfo.username }}</span>
         </div>
         <template #dropdown>
           <el-dropdown-menu>
