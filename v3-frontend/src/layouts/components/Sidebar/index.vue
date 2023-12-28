@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "vue"
+import { computed, onBeforeMount } from "vue"
 import { useRoute } from "vue-router"
 import { storeToRefs } from "pinia"
 import { useAppStore } from "@/store/modules/app"
@@ -50,6 +50,11 @@ const tipLineWidth = computed(() => {
 // 当为顶部模式时隐藏垂直滚动条
 const hiddenScrollbarVerticalBar = computed(() => {
   return layoutMode.value === "top" ? "none" : "block"
+})
+
+onBeforeMount(() => {
+  // 动态设置权限路由
+  permissionStore.setRoutes(["admin"])
 })
 </script>
 
