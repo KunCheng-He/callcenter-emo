@@ -32,9 +32,11 @@ export const useUserStore = defineStore("user", () => {
     setToken(data.token)
     token.value = data.token
     userid.value = data.id
+    await getInfo() // 获取用户信息
   }
   /** 获取用户详情 */
   const getInfo = async () => {
+    console.log("获取用户详情")
     const data = await getUserInfoApi(userid.value)
     setUserInfo(data)
     username.value = data.username
