@@ -28,7 +28,6 @@ export const useUserStore = defineStore("user", () => {
   /** 登录 */
   const login = async ({ username, password }: LoginRequestData) => {
     const data = await loginApi({ username, password })
-    // 下方异常不用管
     setToken(data.token)
     token.value = data.token
     userid.value = data.id
@@ -36,7 +35,6 @@ export const useUserStore = defineStore("user", () => {
   }
   /** 获取用户详情 */
   const getInfo = async () => {
-    console.log("获取用户详情")
     const data = await getUserInfoApi(userid.value)
     // 设置用户信息
     userinfo.value = data
