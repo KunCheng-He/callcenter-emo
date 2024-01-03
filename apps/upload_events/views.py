@@ -2,6 +2,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.generics import CreateAPIView, ListAPIView
 from .models import UploadEvent
 from .serializers import UploadEventSerializer
+from cc_celery.tasks import tasks
 
 # Create your views here.
 
@@ -18,4 +19,6 @@ class UploadEventView(CreateAPIView, ListAPIView):
         print("保存完毕")
 
     def get_queryset(self):
+        # 暂时利用该请求测试一下异步任务的执行
+        tasks.test_task.delay()
         return UploadEvent.objects.all()
