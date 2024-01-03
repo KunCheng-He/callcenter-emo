@@ -40,11 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',       # 跨域支持
-    'rest_framework',    # REST API
-    'apps.accounts',     # 自定义用户、角色
-    'apps.email_login',  # 改用邮箱登录
-    'drf_spectacular',   # OpenAPI
+    'corsheaders',         # 跨域支持
+    'rest_framework',      # REST API
+    'apps.accounts',       # 自定义用户、角色
+    'apps.email_login',    # 改用邮箱登录
+    'apps.upload_events',  # 上传事件
+    'drf_spectacular',     # OpenAPI
 ]
 
 MIDDLEWARE = [
