@@ -8,5 +8,5 @@ class UploadEventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UploadEvent
         fields = ['id', 'cs_user_id', 'upload_time', 'file']
-        read_only_fields = ['id', 'cs_user_id', 'upload_time']
+        read_only_fields = ['id', 'upload_time']
     
