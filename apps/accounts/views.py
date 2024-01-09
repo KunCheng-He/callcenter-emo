@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
@@ -30,6 +30,17 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsOwnerOrReadCreate]
+
+    def get_queryset(self):
+        user_role = self.request.query_params.get('role', None)
+        
+        # 如果用户提供了角色参数，过滤出该角色下的用户
+        if user_role:
+            role_instance = get_object_or_404(UserRole, name=user_role)
+            return CustomUser.objects.filter(role=role_instance)
+        
+        # 否则返回所有用户
+        return CustomUser.objects.all()
 
     def create(self, request, *args, **kwargs):
         """重写该方法，注册新用户时对password进行加密"""
