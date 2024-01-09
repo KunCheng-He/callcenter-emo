@@ -4,9 +4,8 @@ import { UploadFilled } from "@element-plus/icons-vue"
 import { type FormInstance, type FormRules } from "element-plus"
 import { ElMessage } from "element-plus"
 import { reactive, onBeforeMount } from "vue"
-import { type RoleData } from "@/api/user-role/types/role"
-import { getUserRoleApi } from "@/api/user-role"
-import { tr } from "element-plus/es/locale/index.mjs"
+import { type UserData } from "@/api/user/types/user"
+import { getCSUserApi } from "@/api/user"
 import console from "console"
 
 defineOptions({
@@ -16,7 +15,7 @@ defineOptions({
 const loading = ref<boolean>(false)
 
 // 角色列表
-const roleList = ref<RoleData[]>([])
+const csUserList = ref<UserData[]>([])
 
 /** 上传表单元素的引用 */
 const uploadFormRef = ref<FormInstance | null>(null)
@@ -74,12 +73,12 @@ const beforeUpload = (file: File) => {
   return true
 }
 
-/** 获取角色列表 */
+/** 获取客服用户列表 */
 const getCSUsers = async () => {
   try {
-    roleList.value = await getUserRoleApi()
+    csUserList.value = await getCSUserApi()
   } catch (error) {
-    console.error("获取用户角色列表失败", error)
+    console.error("获取客服用户列表失败", error)
   }
 }
 
@@ -113,7 +112,7 @@ onBeforeMount(() => {
         </el-form-item>
         <el-form-item prop="cs_user_id">
           <el-select v-model="uploadFormData.cs_user_id" placeholder="选择文件所属的客服人员">
-            <el-option v-for="item in roleList" :key="item.url" :label="item.name" :value="item.url" />
+            <el-option v-for="item in csUserList" :key="item.url" :label="item.username" :value="item.url" />
           </el-select>
         </el-form-item>
         <el-button :loading="loading" type="primary" size="large" @click.prevent="handleUpload"

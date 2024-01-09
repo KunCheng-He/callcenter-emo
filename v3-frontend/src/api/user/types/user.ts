@@ -5,7 +5,7 @@ export interface UserRequestData {
   password: string
 }
 
-export type CreateUserResponse = {
+export interface UserData {
   url: string
   email: string
   username: string
@@ -17,3 +17,5 @@ export type CreateUserResponse = {
   last_login: string
   date_joined: string
 }
+
+export type UserResponseData = Array<UserData>
