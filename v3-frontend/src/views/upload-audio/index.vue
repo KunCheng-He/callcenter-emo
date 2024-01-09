@@ -2,9 +2,12 @@
 import { ref } from "vue"
 import { UploadFilled } from "@element-plus/icons-vue"
 import { type FormInstance, type FormRules } from "element-plus"
+import { ElMessage } from "element-plus"
 import { reactive, onBeforeMount } from "vue"
 import { type RoleData } from "@/api/user-role/types/role"
 import { getUserRoleApi } from "@/api/user-role"
+import { tr } from "element-plus/es/locale/index.mjs"
+import console from "console"
 
 defineOptions({
   name: "UploadAudio"
@@ -27,20 +30,6 @@ const uploadFormData = reactive({
 
 /** 表单规则校验 */
 const uploadFormRules: FormRules = {
-  file: [
-    { required: true, message: "请选择文件" },
-    {
-      validator: async (rule, value) => {
-        if (value) {
-          const allowedExtensions = ["mp3", "zip"]
-          const fileExtension = value.name.split(".").pop().toLowerCase()
-          if (!allowedExtensions.includes(fileExtension)) {
-            throw new Error("文件类型只能是 mp3 或 zip")
-          }
-        }
-      }
-    }
-  ],
   cs_user_id: [{ required: true, message: "请选择文件所属的客服人员" }]
 }
 
@@ -54,6 +43,35 @@ const handleUpload = () => {
       console.log("表单校验不通过", fields)
     }
   })
+}
+
+/** 覆盖默认文件上传请求，将文件给到表单对象 */
+const setFile = () => {
+  console.log("覆盖默认上传行为")
+}
+
+/** 超过限制时进行提示 */
+const exceedProcess = () => {
+  ElMessage.warning("超过文件数量限制")
+}
+
+/** 上传文件之前额外的文件类型校验 */
+const beforeUpload = (file: File) => {
+  const allowedExtensions = ["mp3", "zip"]
+  const fileExtension = file.name.split(".").pop().toLowerCase()
+
+  // 文件类型校验
+  if (!allowedExtensions.includes(fileExtension)) {
+    ElMessage.warning("文件类型只能是 mp3 或 zip")
+    return false // 阻止文件上传
+  }
+  // 文件大小校验
+  if (file.size > 1024 * 1024 * 20) {
+    ElMessage.warning("文件大小不能超过 20MB")
+    return false // 阻止文件上传
+  }
+  // 通过文件校验
+  return true
 }
 
 /** 获取角色列表 */
@@ -76,7 +94,16 @@ onBeforeMount(() => {
     <el-card v-loading="loading" shadow="never">
       <el-form ref="uploadFormRef" :model="uploadFormData" :rules="uploadFormRules" @keyup.enter="handleUpload">
         <el-form-item prop="file">
-          <el-upload v-model.trim="uploadFormData.file" drag class="el-upload">
+          <el-upload
+            v-model="uploadFormData.file"
+            class="el-upload"
+            :drag="true"
+            action=""
+            :http-request="setFile"
+            :limit="1"
+            :on-exceed="exceedProcess"
+            :before-upload="beforeUpload"
+          >
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
             <div class="el-upload__text">拖拽文件到此处，或 <em>点击上传</em></div>
             <template #tip>
