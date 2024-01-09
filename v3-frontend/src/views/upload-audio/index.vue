@@ -6,7 +6,6 @@ import { ElMessage } from "element-plus"
 import { reactive, onBeforeMount } from "vue"
 import { type UserData } from "@/api/user/types/user"
 import { getCSUserApi } from "@/api/user"
-import console from "console"
 
 defineOptions({
   name: "UploadAudio"
