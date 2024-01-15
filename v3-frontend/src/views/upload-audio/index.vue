@@ -1,15 +1,19 @@
 <script lang="ts" setup>
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 import { UploadFilled } from "@element-plus/icons-vue"
 import { type FormInstance, type FormRules } from "element-plus"
 import { ElMessage } from "element-plus"
 import { reactive, onBeforeMount } from "vue"
 import { type UserData } from "@/api/user/types/user"
 import { getCSUserApi } from "@/api/user"
+import { uploadApi } from "@/api/upload-audio"
 
 defineOptions({
   name: "UploadAudio"
 })
+
+const router = useRouter()
 
 const loading = ref<boolean>(false)
 
@@ -36,7 +40,18 @@ const handleUpload = () => {
   uploadFormRef.value?.validate(async (valid: boolean, fields) => {
     if (valid) {
       loading.value = true
-      console.log("验证通过")
+      try {
+        let formdata = new FormData()
+        formdata.append("cs_user_id", uploadFormData.cs_user_id)
+        formdata.append("file", uploadFormData.file)
+        const response = await uploadApi(formdata)
+        console.log(response)
+        router.push({ path: "/uploadaudio" })
+      } catch (error) {
+        console.log("上传失败", error)
+        ElMessage.error("上传失败")
+      }
+      loading.value = false
     } else {
       console.log("表单校验不通过", fields)
     }
@@ -44,8 +59,8 @@ const handleUpload = () => {
 }
 
 /** 覆盖默认文件上传请求，将文件给到表单对象 */
-const setFile = () => {
-  console.log("覆盖默认上传行为")
+const setFile = (params) => {
+  uploadFormData.file = params.file
 }
 
 /** 超过限制时进行提示 */
