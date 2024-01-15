@@ -47,6 +47,7 @@ const handleUpload = () => {
         const response = await uploadApi(formdata)
         console.log(response)
         router.push({ path: "/" })
+        ElMessage.success("上传成功")
       } catch (error) {
         console.log("上传失败", error)
         ElMessage.error("上传失败")
