@@ -5,7 +5,7 @@ export function uploadApi(formdata: Upload.UploadRequestData) {
   return request<Upload.UploadResponseData>({
     url: "/upload/",
     method: "post",
-    formdata,
+    data: formdata,
     headers: {
       "Content-Type": "multipart/form-data"
     }

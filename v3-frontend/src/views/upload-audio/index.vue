@@ -41,12 +41,12 @@ const handleUpload = () => {
     if (valid) {
       loading.value = true
       try {
-        let formdata = new FormData()
+        const formdata = new FormData()
         formdata.append("cs_user_id", uploadFormData.cs_user_id)
         formdata.append("file", uploadFormData.file)
         const response = await uploadApi(formdata)
         console.log(response)
-        router.push({ path: "/uploadaudio" })
+        router.push({ path: "/" })
       } catch (error) {
         console.log("上传失败", error)
         ElMessage.error("上传失败")

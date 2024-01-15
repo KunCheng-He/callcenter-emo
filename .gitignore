@@ -108,3 +108,4 @@ venv.bak/
 callcenter_emo/config.py
 .idea/
 .vscode/
+upload_files/
