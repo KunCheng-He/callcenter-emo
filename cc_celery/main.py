@@ -1,5 +1,6 @@
 # 主程序
 import os
+import django
 from celery import Celery
 from callcenter_emo.config import broker_url, result_backend
 
@@ -9,6 +10,9 @@ app = Celery("callcenter_emo", broker=broker_url, backend=result_backend)
 
 # 把celery和django进行组合，识别和加载django的配置文件
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'callcenter_emo.settings')
+
+# Django组件初始化
+django.setup()
 
 # 加载任务
 # 参数必须必须是一个列表，里面的每一个任务都是任务的路径名称

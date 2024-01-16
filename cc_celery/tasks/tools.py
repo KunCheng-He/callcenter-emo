@@ -15,7 +15,7 @@ def get_upload_event_info(orig_data: dict):
     - cs_user_id: 用户ID
     - file_path: 文件路径
     """
-    event_id = orig_data['id']
+    event_id = int(re.findall(r'\d+', orig_data['url'])[-1])
     cs_user_id = int(re.findall(r'\d+', orig_data['cs_user_id'])[-1])
     file_path = orig_data['file'].split("/upload_files/")[-1]
     return event_id, cs_user_id, file_path
@@ -45,8 +45,21 @@ def mp3_separate_left_right(file_path: str):
     return left_path, right_path
 
 
+def get_relative_path(file_path: str, base_path: str):
+    """
+    获取相对路径
+
+    Args:
+    - file_path: 原始文件路径
+    - base_path: 基础路径
+    Returns:
+    - relative_path: 相对路径
+    """
+    relative_path = os.path.normpath(file_path.replace(base_path, '', 1))
+    return relative_path
+
+
 if __name__ == '__main__':
     # 测试
     filepath = "/home/alchemy/Code/callcenter-emo/upload_files/2024/01/15/test1.mp3"
-    left_path, right_path = mp3_separate_left_right(filepath)
-    print(left_path, right_path)
+    print(get_relative_path(filepath, "/home/alchemy/Code/callcenter-emo"))

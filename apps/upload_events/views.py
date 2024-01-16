@@ -18,9 +18,5 @@ class UploadEventView(viewsets.ModelViewSet):
         serializer.save()
         # 获取已保存的对象实例
         data = serializer.data
-        print("序列化数据:\n", data)
-    
-    def get_queryset(self):
-        # 暂时利用该请求测试一下异步任务的执行
-        tasks.test_task.delay()
-        return UploadEvent.objects.all()
+        # 调用异步任务，将音频分离加入音频表中
+        tasks.audio_process.delay(data)
