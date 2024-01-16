@@ -2,7 +2,7 @@ import os
 import time
 from cc_celery.main import app
 
-from .tools import get_upload_event_info
+from .tools import get_upload_event_info, mp3_separate_left_right
 
 
 # 异步测试任务
@@ -20,10 +20,13 @@ def audio_process(upload_dict: dict):
     """
     # 获取上传事件实例中的数据
     event_id, cs_user_id, file_path = get_upload_event_info(upload_dict)
+    # 还原完整文件路径
+    file_path = os.path.join(os.getcwd(), "upload_files", file_path)
     # 获取文件类型，根据类型不同进行不同处理
     _, file_type = os.path.splitext(file_path)
     if file_type == '.mp3':
         # 处理mp3格式的文件
+        left_path, right_path = mp3_separate_left_right(file_path)
         return "mp3"
     elif file_type == '.zip':
         # 处理zip格式的文件
