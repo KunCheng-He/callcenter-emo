@@ -1,7 +1,10 @@
 # 一些基本的处理方法
 
-import re, os
+import re, os, zipfile
 from pydub import AudioSegment
+
+from apps.audio.models import Audio
+from apps.upload_events.models import UploadEvent
 
 def get_upload_event_info(orig_data: dict):
     """
@@ -59,7 +62,48 @@ def get_relative_path(file_path: str, base_path: str):
     return relative_path
 
 
+def unzip_file(file_path: str):
+    """
+    解压缩文件
+
+    Args:
+        file_path (str): 压缩文件的路径
+
+    Returns:
+        str: 解压后的文件路径
+    """
+    unzip_path = file_path[:-4] + "_unzip"
+    with zipfile.ZipFile(file_path, 'r') as zip_ref:
+        zip_ref.extractall(unzip_path)
+    return unzip_path
+
+
+def mp3_add_database(event_id: int, file_path: str):
+    """
+    将mp3格式的文件转换为wav格式的文件，并将其加入音频数据表
+
+    Args:
+        event_id (int): 上传事件实例的ID
+        file_path (str): mp3格式文件的路径
+        
+    Returns:
+        None
+    """
+    # 处理mp3格式的文件为wav格式的文件
+    left_path, right_path = mp3_separate_left_right(file_path)
+    # 获取上传事件实例
+    upload_object = UploadEvent.objects.get(id=event_id)
+    # 将分离出的音频加入音频数据表
+    audio_object = Audio.objects.create(
+        orig_file_path = get_relative_path(file_path, os.getcwd()),
+        left_file_path = get_relative_path(left_path, os.getcwd()),
+        right_file_path = get_relative_path(right_path, os.getcwd()),
+        upload_event_id = upload_object
+    )
+    audio_object.save()
+
+
 if __name__ == '__main__':
     # 测试
-    filepath = "/home/alchemy/Code/callcenter-emo/upload_files/2024/01/15/test1.mp3"
-    print(get_relative_path(filepath, "/home/alchemy/Code/callcenter-emo"))
+    filepath = "/home/alchemy/Code/callcenter-emo/upload_files/2024/01/15/test.zip"
+    print(unzip_file(filepath))
