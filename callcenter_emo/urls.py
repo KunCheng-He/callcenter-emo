@@ -23,6 +23,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from apps.accounts.views import UserRoleViewSet, UserViewSet, LoginView
 from apps.upload_events.views import UploadEventView
 from apps.audio.views import AudioViewSet
+from apps.emotion.views import EmotionViewSet
 
 
 # 创建 apps 里应用的路由并注册
@@ -31,6 +32,7 @@ router.register('roles', UserRoleViewSet)          # 角色路由
 router.register('users', UserViewSet)              # 用户路由
 router.register('upload', UploadEventView)         # 上传事件路由
 router.register('audio', AudioViewSet)             # 音频路由
+router.register('emotion', EmotionViewSet)         # 音频情感路由
 
 urlpatterns = [
     path('admin/', admin.site.urls),
