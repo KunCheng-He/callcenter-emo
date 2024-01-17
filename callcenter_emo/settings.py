@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.email_login',    # 改用邮箱登录
     'apps.upload_events',  # 上传事件
     'apps.audio',          # 音频处理
+    'apps.emotion',        # 音频情感识别
     'drf_spectacular',     # OpenAPI
 ]
 
