@@ -167,7 +167,8 @@ SIMPLE_JWT = {
 }
 
 # 跨域支持
-CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5173', 'http://172.18.254.166:5173']  # 授权进行跨站点 HTTP 请求的源列表
-# 因为跨域之后需要传递sessionid 到浏览器cookie，所以添加如下配置。
-CORS_ALLOW_CREDENTIALS = True  # 允许 Cookie 包含在跨站点 HTTP 请求中
-SESSION_COOKIE_SAMESITE = None  # django 自己的安全策略
+# CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5173', 'http://172.18.254.166:5173']  # 授权进行跨站点 HTTP 请求的源列表
+# # 因为跨域之后需要传递sessionid 到浏览器cookie，所以添加如下配置。
+# CORS_ALLOW_CREDENTIALS = True  # 允许 Cookie 包含在跨站点 HTTP 请求中
+# SESSION_COOKIE_SAMESITE = None  # django 自己的安全策略
+CORS_ALLOW_ALL_ORIGINS = True
