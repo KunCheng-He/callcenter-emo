@@ -1,17 +1,18 @@
+import torch
 import torchaudio
 from torch.utils.data import Dataset
 from torchaudio import transforms as T
 
 # 音频情感识别的预处理操作
 
-def read_audio_split(file_path: str, frame_length=5, overlap=0.5):
+def read_audio_split(file_path: str, frame_length=10, overlap=0.75):
     """
     读取音频文件，并按特定长度进行切分
 
     参数：
         file_path (str)：音频文件的路径
-        frame_length (int, optional)：帧的长度，默认为5秒
-        overlap (float, optional)：帧的重叠比例，默认为0.5
+        frame_length (int, optional)：帧的长度，默认为10秒
+        overlap (float, optional)：帧的重叠比例，默认为0.75
 
     返回：
         segmented_frames (list)：切分后的音频帧列表
@@ -40,16 +41,24 @@ def read_audio_split(file_path: str, frame_length=5, overlap=0.5):
 
 class AudioDataset(Dataset):
     """音频数据集类"""
-    def __init__(self, segmented_frames):
+    def __init__(self, segmented_frames, sample_rate):
         """
         初始化函数
 
         参数:
             segmented_frames (list): 音频帧列表
+            sample_rate (int): 采样率
         """
         self.segmented_frames = segmented_frames
         # MFCC 特征
-        self.transform = T.Spectrogram(n_fft=510, hop_length=510 // 2, center=True, pad_mode="reflect", power=2.0)
+        self.transform = T.MFCC(
+                sample_rate=sample_rate, n_mfcc=50, melkwargs={
+                    "n_fft": 1024,
+                    "n_mels": 50,
+                    "hop_length": 512,
+                    "mel_scale": "htk"
+                }
+            )
 
     def __len__(self):
         return len(self.segmented_frames)
@@ -59,12 +68,13 @@ class AudioDataset(Dataset):
         waveform = self.segmented_frames[idx]
         # 如果提供了变换函数，则应用变换
         waveform = self.transform(waveform)
+        waveform = torch.permute(waveform, (0, 2, 1))
         return waveform
 
 
 if __name__ == '__main__':
     # 测试代码
     file_path = "/home/alchemy/Code/callcenter-emo/upload_files/2024/01/17/test1_left.wav"
-    segmented_frames, sample_rate = read_audio_split(file_path)
-    dataset = AudioDataset(segmented_frames)
-    print(dataset.__getitem__(3))
+    segmented_frames, sample_rate = read_audio_split(file_path)  # 其中一个shape: [1, 80000]
+    dataset = AudioDataset(segmented_frames, sample_rate)
+    print(dataset.__getitem__(3).shape)  # shape [1, 157, 50]
