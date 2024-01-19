@@ -3,8 +3,9 @@ import time
 
 from cc_celery.main import app
 from .tools import get_upload_event_info, unzip_file, mp3_add_database
+from .ai_ser.recognition import recognize_sentiment
 from apps.audio.models import Audio
-from apps.upload_events.models import UploadEvent
+from apps.emotion.models import Emotion
 
 
 # 异步测试任务
@@ -28,7 +29,9 @@ def audio_process(upload_dict: dict):
     _, file_type = os.path.splitext(file_path)
     if file_type == '.mp3':
         # 处理mp3格式的文件
-        mp3_add_database(event_id, file_full_path)
+        audio_id = mp3_add_database(event_id, file_full_path)
+        # 识别音频情感
+        emotion_recognition.delay(audio_id)
         return f"event_id:{event_id} audio add database, filename:{file_path}"
     elif file_type == '.zip':
         # 处理zip格式的文件
@@ -37,9 +40,35 @@ def audio_process(upload_dict: dict):
             for file in files:
                 if file.endswith('.mp3'):
                     mp3_file_path = os.path.join(root, file)
-                    mp3_add_database(event_id, mp3_file_path)
+                    audio_id = mp3_add_database(event_id, mp3_file_path)
+                    # 识别音频情感
+                    emotion_recognition.delay(audio_id)
         return f"event_id:{event_id} zip file unzip and audio add database, zipname:{file_path}"
     else:
         # 其他格式的文件代表有误
         print("文件格式不在处理范围")
         return "文件格式不在处理范围"
+
+
+@app.task
+def emotion_recognition(audio_id: int):
+    """
+    情感识别任务，根据给定的音频id进行情感识别，并将结果写入情感数据库
+    """
+    # 获取音频实例和文件的完整路径
+    audio_object = Audio.objects.get(id=audio_id)
+    left_path = os.path.join(os.getcwd(), audio_object.left_file_path[1:])
+    right_path = os.path.join(os.getcwd(), audio_object.right_file_path[1:])
+    # 情感识别
+    left_emotions = recognize_sentiment(left_path)
+    right_emotions = recognize_sentiment(right_path)
+    frame_num = len(left_emotions)
+    # 写入情感数据库
+    emotion_object = Emotion.objects.create(
+        audio_id = audio_object,
+        frame_num = frame_num,
+        left_emotions = left_emotions,
+        right_emotions = right_emotions
+    )
+    emotion_object.save()
+    return f"audio_id:{audio_id} emotion recognition success, add to emotion database, emotion_id:{emotion_object.id}"
