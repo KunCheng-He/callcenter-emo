@@ -87,7 +87,7 @@ def mp3_add_database(event_id: int, file_path: str):
         file_path (str): mp3格式文件的路径
         
     Returns:
-        None
+        audio_id (int): 音频实例的ID
     """
     # 处理mp3格式的文件为wav格式的文件
     left_path, right_path = mp3_separate_left_right(file_path)
@@ -101,6 +101,8 @@ def mp3_add_database(event_id: int, file_path: str):
         upload_event_id = upload_object
     )
     audio_object.save()
+    audio_id = audio_object.id
+    return audio_id
 
 
 if __name__ == '__main__':
