@@ -1,4 +1,4 @@
-from django.db.models import Model, CharField, EmailField, ForeignKey, BooleanField, SET_NULL, DateTimeField
+from django.db.models import Model, CharField, EmailField, ForeignKey, BooleanField, SET_NULL, DateTimeField, BigIntegerField
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.utils import timezone
@@ -38,6 +38,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         help_text="指定是否应将此用户视为活动用户。取消选择此项而不是删除帐户"
     )
     date_joined = DateTimeField(default=timezone.now, verbose_name='加入日期')
+
+    # 质检相关字段
+    audio_num = BigIntegerField(default=0, null=False, verbose_name='音频数量')
+    user_emo_up = BigIntegerField(default=0, null=False, verbose_name='用户正向情感')
+    user_emo_norm = BigIntegerField(default=0, null=False, verbose_name='用户中性情感')
+    user_emo_down = BigIntegerField(default=0, null=False, verbose_name='用户负向情感')
+    emo_up = BigIntegerField(default=0, null=False, verbose_name='客服正向情感')
+    emo_norm = BigIntegerField(default=0, null=False, verbose_name='客服中性情感')
+    emo_down = BigIntegerField(default=0, null=False, verbose_name='客服负向情感')
+
+    # 核验相关字段
+    check_num = BigIntegerField(default=0, null=False, verbose_name='核验音频数量')
+    cut_num = BigIntegerField(default=0, null=False, verbose_name='切分音频数量')
 
     objects = UserManager()
 

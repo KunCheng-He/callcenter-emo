@@ -19,8 +19,14 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     """用户信息序列化"""
     class Meta:
         model = CustomUser
-        fields = ['url', 'email', 'username', 'role', 'password', 'is_superuser', 'is_staff', 'is_active', 'last_login', 'date_joined']
-        read_only_fields = ['is_superuser', 'is_staff', 'is_active', 'last_login', 'date_joined']
+        fields = [
+            'url', 'email', 'username', 'role', 'password', 'is_superuser', 'is_staff', 'is_active', 'last_login', 'date_joined',
+            'audio_num', 'user_emo_up', 'user_emo_norm', 'user_emo_down', 'emo_up', 'emo_norm', 'emo_down', 'check_num', 'cut_num'
+        ]
+        read_only_fields = [
+            'is_superuser', 'is_staff', 'is_active', 'last_login', 'date_joined',
+            'audio_num', 'user_emo_up', 'user_emo_norm', 'user_emo_down', 'emo_up', 'emo_norm', 'emo_down', 'check_num', 'cut_num'
+        ]
 
 
 # Token序列化
