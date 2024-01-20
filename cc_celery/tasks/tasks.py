@@ -29,7 +29,7 @@ def audio_process(upload_dict: dict):
     _, file_type = os.path.splitext(file_path)
     if file_type == '.mp3':
         # 处理mp3格式的文件
-        audio_id = mp3_add_database(event_id, file_full_path)
+        audio_id = mp3_add_database(event_id, file_full_path, cs_user_id)
         # 识别音频情感
         emotion_recognition.delay(audio_id)
         return f"event_id:{event_id} audio add database, filename:{file_path}"
@@ -40,7 +40,7 @@ def audio_process(upload_dict: dict):
             for file in files:
                 if file.endswith('.mp3'):
                     mp3_file_path = os.path.join(root, file)
-                    audio_id = mp3_add_database(event_id, mp3_file_path)
+                    audio_id = mp3_add_database(event_id, mp3_file_path, cs_user_id)
                     # 识别音频情感
                     emotion_recognition.delay(audio_id)
         return f"event_id:{event_id} zip file unzip and audio add database, zipname:{file_path}"

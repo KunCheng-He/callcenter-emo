@@ -4,6 +4,7 @@ import re, os, zipfile
 from pydub import AudioSegment
 
 from apps.audio.models import Audio
+from apps.accounts.models import CustomUser
 from apps.upload_events.models import UploadEvent
 
 def get_upload_event_info(orig_data: dict):
@@ -78,13 +79,14 @@ def unzip_file(file_path: str):
     return unzip_path
 
 
-def mp3_add_database(event_id: int, file_path: str):
+def mp3_add_database(event_id: int, file_path: str, user_id: int):
     """
     将mp3格式的文件转换为wav格式的文件，并将其加入音频数据表
 
     Args:
         event_id (int): 上传事件实例的ID
         file_path (str): mp3格式文件的路径
+        user_id (int): 音频所属客服用户的ID
         
     Returns:
         audio_id (int): 音频实例的ID
@@ -102,6 +104,10 @@ def mp3_add_database(event_id: int, file_path: str):
     )
     audio_object.save()
     audio_id = audio_object.id
+    # 客服音频数量更新
+    user_object = CustomUser.objects.get(id=user_id)
+    user_object.audio_num = user_object.audio_num + 1
+    user_object.save()
     return audio_id
 
 
