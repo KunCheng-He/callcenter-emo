@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, onBeforeMount } from "vue"
 import { ElMessageBox } from "element-plus"
 import { useRouter } from "vue-router"
 import { getUserInfo } from "@/utils/cache/cookies"
+import { type AudioData } from "@/api/audio/types/audio"
+import { getNOCheckAudioApi } from "@/api/audio"
 
 defineOptions({
   name: "CheckAudio"
@@ -23,6 +25,26 @@ if (userinfo.role.match(/\/roles\/(\d+)\/$/)[1] != "2") {
     }
   })
 }
+
+// 当前用户角色符合
+
+/** 未审核音频列表 */
+const noCheckAudioList = ref<AudioData[]>([])
+
+/** 获取未审核音频列表 */
+const getNoCheckAudio = async () => {
+  try {
+    noCheckAudioList.value = await getNOCheckAudioApi()
+    console.log(noCheckAudioList)
+  } catch (error) {
+    console.error("获取未审核音频列表失败", error)
+  }
+}
+
+// 在页面加载前调用的方法
+onBeforeMount(() => {
+  getNoCheckAudio() // 获取客服角色列表
+})
 </script>
 
 <template>
