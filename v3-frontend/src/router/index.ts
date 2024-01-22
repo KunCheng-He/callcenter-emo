@@ -86,6 +86,22 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: "/checkaudio",
+    component: Layouts,
+    redirect: "/checkaudio/check",
+    children: [
+      {
+        path: "check",
+        component: () => import("@/views/check-audio/index.vue"),
+        name: "CheckAudio",
+        meta: {
+          title: "音频审计",
+          svgIcon: "check"
+        }
+      }
+    ]
+  },
+  {
     path: "/unocss",
     component: Layouts,
     redirect: "/unocss/index",
