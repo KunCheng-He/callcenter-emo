@@ -35,15 +35,29 @@ const noCheckAudioList = ref<AudioData[]>([])
 const getNoCheckAudio = async () => {
   try {
     noCheckAudioList.value = await getNOCheckAudioApi()
-    console.log(noCheckAudioList)
   } catch (error) {
     console.error("获取未审核音频列表失败", error)
   }
 }
 
+/** 音频已经全部审核完成则跳转到首页 */
+const isHave = () => {
+  if (noCheckAudioList.value.length == 0) {
+    ElMessageBox.alert("音频全部审核完成，确认后将跳转首页。", "提示", {
+      confirmButtonText: "OK",
+      callback: () => {
+        router.push({ path: "/" })
+      }
+    })
+  } else {
+    console.log("未审核音频列表不为空")
+  }
+}
+
 // 在页面加载前调用的方法
 onBeforeMount(() => {
-  getNoCheckAudio() // 获取客服角色列表
+  getNoCheckAudio() // 获取未审核音频列表
+  isHave() // 判断是否全部审核完成
 })
 </script>
 
