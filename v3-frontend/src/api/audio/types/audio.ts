@@ -7,8 +7,4 @@ export interface AudioData {
   checked: Boolean
 }
 
-export interface AudioBinData {
-  data: ArrayBuffer
-}
-
 export type GetAudioResponseData = Array<AudioData>

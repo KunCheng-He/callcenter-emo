@@ -14,7 +14,7 @@ export function getNOCheckAudioApi() {
 
 /** 获取音频文件 */
 export function getAudioApi(path: string) {
-  return request<Audio.AudioBinData>({
+  return request<Blob>({
     url: "/get-audio/",
     method: "get",
     params: {
