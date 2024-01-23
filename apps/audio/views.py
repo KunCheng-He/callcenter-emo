@@ -1,5 +1,9 @@
-from django.shortcuts import render, get_list_or_404
+import os
+from django.shortcuts import render
+from django.http import FileResponse, HttpResponseNotFound
+from django.views import View
 from rest_framework import viewsets
+
 
 from .models import Audio
 from .serializers import AudioSerializer
@@ -23,3 +27,18 @@ class AudioViewSet(viewsets.ModelViewSet):
             return Audio.objects.filter(checked=False)
         else:
             return Audio.objects.all()
+    
+
+# 音频文件获取视图
+class AudioFileView(View):
+    """ 音频文件获取视图 """
+
+    def get(self, request):
+        path = self.request.GET.get('path', None)
+        file_path = os.path.join(os.getcwd(), path[1:])
+        try:
+            file = open(file_path, 'rb')
+            response = FileResponse(file)
+            return response
+        except:
+            return HttpResponseNotFound("文件不存在")

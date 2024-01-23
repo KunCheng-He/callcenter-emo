@@ -22,7 +22,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from apps.accounts.views import UserRoleViewSet, UserViewSet, LoginView
 from apps.upload_events.views import UploadEventView
-from apps.audio.views import AudioViewSet
+from apps.audio.views import AudioViewSet, AudioFileView
 from apps.emotion.views import EmotionViewSet
 
 
@@ -43,5 +43,6 @@ urlpatterns = [
     path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # 刷新Token有效期的接口
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),  # 验证Token的有效性
     path('login/', LoginView.as_view(), name='login'),  # 登录接口获取 Token
+    path('get-audio/', AudioFileView.as_view(), name='get-audio'),
     path('', include(router.urls)),  # apps 中应用的路由
 ]
