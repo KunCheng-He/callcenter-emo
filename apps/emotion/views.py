@@ -16,7 +16,7 @@ class EmotionViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
 
     def get_queryset(self):
-        audio_id = self.request.query_params.get('audio-id', None)
+        audio_id = self.request.query_params.get('audio', None)
         
         # 如果用户提供了音频ID，过滤出该该音频的情感
         if audio_id:
