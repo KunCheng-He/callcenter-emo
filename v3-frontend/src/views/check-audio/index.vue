@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue"
 import { ElMessageBox } from "element-plus"
+import { AVWaveform } from "vue-audio-visual"
 import { useRouter } from "vue-router"
 import { getUserInfo } from "@/utils/cache/cookies"
 import { type AudioData } from "@/api/audio/types/audio"
-import { getNOCheckAudioApi, getAudioApi } from "@/api/audio"
+import { getNOCheckAudioApi } from "@/api/audio"
 import { getEmotionForAudioApi } from "@/api/emotion"
 
 defineOptions({
@@ -35,15 +36,21 @@ const noCheckAudioList = ref<AudioData[]>([])
 /** 当前未审核音频 */
 const noCheckAudio = ref<AudioData | null>(null)
 
-/** 所有音频二进制数据 */
-const oriAudioBin = ref<Blob | null>(null)
-const leftAudioBin = ref<Blob | null>(null)
-const rightAudioBin = ref<Blob | null>(null)
+/** 所有音频请求后端url */
+const oriAudioUrl = ref<string>("")
+const leftAudioUrl = ref<string>("")
+const rightAudioUrl = ref<string>("")
 
 /** 音频对应的情感 */
 const frameNum = ref<number>(0)
 const leftEmotion = ref<number[] | null>(null)
 const rightEmotion = ref<number[] | null>(null)
+
+const flag = ref<boolean>(false)
+
+const changeflag = () => {
+  flag.value = !flag.value
+}
 
 /** 获取未审核音频列表 */
 const getNoCheckAudio = async () => {
@@ -66,27 +73,19 @@ const isHave = () => {
     })
   } else {
     noCheckAudio.value = noCheckAudioList.value[0]
-    // 请求音频二进制数据
-    getAudioBin()
+    // 合成音频后端 url
+    getAudioUrl()
     // 请求音频情感
     getEmotion()
   }
 }
 
-/** 请求音频二进制数据 */
-const getAudioBin = async () => {
-  try {
-    oriAudioBin.value = await getAudioApi(noCheckAudio.value.orig_file_path)
-    leftAudioBin.value = await getAudioApi(noCheckAudio.value.left_file_path)
-    rightAudioBin.value = await getAudioApi(noCheckAudio.value.right_file_path)
-  } catch (error) {
-    ElMessageBox.alert("获取音频数据流失败，确认后将跳转首页。", "提示", {
-      confirmButtonText: "OK",
-      callback: () => {
-        router.push({ path: "/" })
-      }
-    })
-  }
+/** 合成音频后端 url */
+const getAudioUrl = () => {
+  const baseUrl = "http://127.0.0.1:8000/get-audio/?path="
+  oriAudioUrl.value = baseUrl + noCheckAudio.value.orig_file_path
+  leftAudioUrl.value = baseUrl + noCheckAudio.value.left_file_path
+  rightAudioUrl.value = baseUrl + noCheckAudio.value.right_file_path
 }
 
 /** 请求情感结果 */
@@ -116,7 +115,21 @@ onBeforeMount(() => {
 <template>
   <div class="app-container">
     <el-card v-loading="loading" shadow="never">
-      <h1>CheckAudio</h1>
+      <div class="common-layout">
+        <el-container>
+          <el-header>
+            <h1>音频审计</h1>
+          </el-header>
+          <el-main>
+            <el-divider content-position="left">原始音频</el-divider>
+            <AVWaveform v-if="flag" :src="oriAudioUrl" />
+            <p v-else>false没有渲染</p>
+            <el-button type="primary" @click.prevent="changeflag"
+              >Click the button to perform a second rendering</el-button
+            >
+          </el-main>
+        </el-container>
+      </div>
     </el-card>
   </div>
 </template>
