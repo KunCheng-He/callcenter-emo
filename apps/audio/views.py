@@ -39,6 +39,7 @@ class AudioFileView(View):
         try:
             file = open(file_path, 'rb')
             response = FileResponse(file)
+            response['Content-Type'] = 'audio/mpeg'
             return response
         except:
             return HttpResponseNotFound("文件不存在")
