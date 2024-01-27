@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue"
 import { ElMessageBox } from "element-plus"
-import { AVWaveform } from "vue-audio-visual"
+import { useAVLine } from "vue-audio-visual"
 import { useRouter } from "vue-router"
 import { getUserInfo } from "@/utils/cache/cookies"
 import { type AudioData } from "@/api/audio/types/audio"
@@ -12,7 +12,7 @@ defineOptions({
   name: "CheckAudio"
 })
 
-const loading = ref<boolean>(false)
+// const loading = ref<boolean>(false)
 
 const router = useRouter()
 
@@ -46,11 +46,13 @@ const frameNum = ref<number>(0)
 const leftEmotion = ref<number[] | null>(null)
 const rightEmotion = ref<number[] | null>(null)
 
-const flag = ref<boolean>(false)
-
-const changeflag = () => {
-  flag.value = !flag.value
-}
+/** 各音乐播放器及其画布 */
+const player1 = ref(null)
+const canvas1 = ref(null)
+const player2 = ref(null)
+const canvas2 = ref(null)
+const player3 = ref(null)
+const canvas3 = ref(null)
 
 /** 获取未审核音频列表 */
 const getNoCheckAudio = async () => {
@@ -106,32 +108,83 @@ const getEmotion = async () => {
   }
 }
 
+/** 设置音乐播放器 */
+const setPlayer = () => {
+  useAVLine(player1, canvas1, {
+    src: oriAudioUrl,
+    canvWidth: 600,
+    canvHeight: 120,
+    lineColor: ["#FFF", "rgb(0,255,127)", "#00f"]
+  })
+  useAVLine(player2, canvas2, {
+    src: leftAudioUrl,
+    canvWidth: 600,
+    canvHeight: 120,
+    lineColor: ["#FFF", "rgb(0,255,127)", "#00f"]
+  })
+  useAVLine(player3, canvas3, {
+    src: rightAudioUrl,
+    canvWidth: 600,
+    canvHeight: 120,
+    lineColor: ["#FFF", "rgb(0,255,127)", "#00f"]
+  })
+}
+
 // 在页面加载前调用的方法
 onBeforeMount(() => {
   getNoCheckAudio() // 获取未审核音频列表
+  setPlayer() // 设置音乐播放器
 })
 </script>
 
 <template>
   <div class="app-container">
-    <el-card v-loading="loading" shadow="never">
-      <div class="common-layout">
-        <el-container>
-          <el-header>
-            <h1>音频审计</h1>
-          </el-header>
-          <el-main>
-            <el-divider content-position="left">原始音频</el-divider>
-            <AVWaveform v-if="flag" :src="oriAudioUrl" />
-            <p v-else>false没有渲染</p>
-            <el-button type="primary" @click.prevent="changeflag"
-              >Click the button to perform a second rendering</el-button
-            >
-          </el-main>
-        </el-container>
-      </div>
+    <el-card shadow="never">
+      <el-divider content-position="left">原始音频</el-divider>
+      <audio class="audio-player" ref="player1" crossorigin="anonymous" :src="oriAudioUrl" controls />
+      <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas1" /></div>
+    </el-card>
+    <el-card shadow="never">
+      <el-divider content-position="left">左声道音频</el-divider>
+      <audio class="audio-player" ref="player2" crossorigin="anonymous" :src="leftAudioUrl" controls />
+      <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas2" /></div>
+    </el-card>
+    <el-card shadow="never">
+      <el-divider content-position="left">右声道音频</el-divider>
+      <audio class="audio-player" ref="player3" crossorigin="anonymous" :src="rightAudioUrl" controls />
+      <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas3" /></div>
     </el-card>
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-card {
+  border-radius: 10px;
+  margin-bottom: 20px;
+  :deep(.el-card__body) {
+    padding-bottom: 2px;
+  }
+}
+
+.el-divider {
+  margin-top: 10px;
+  margin-bottom: 25px;
+}
+
+.audio-player {
+  width: 100%;
+  height: 100%;
+}
+
+.audio-canvas-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20vh; // 可根据需要调整高度，这里设置为视口的高度
+
+  .audio-canvas {
+    // 设置canvas样式，可以根据需要进行调整
+    border: 1px solid #ccc;
+  }
+}
+</style>
