@@ -19,8 +19,6 @@ defineOptions({
   name: "CheckAudio"
 })
 
-// const loading = ref<boolean>(false)
-
 const router = useRouter()
 
 const userinfo = getUserInfo()
@@ -91,15 +89,9 @@ const leftOption = ref({
   yAxis: {
     type: "category",
     data: ["消极", "中立", "积极"],
-    axisLine: {
-      show: true // 显示y轴线
-    },
-    axisTick: {
-      show: false // 隐藏y轴刻度
-    },
-    splitLine: {
-      show: true // 显示网格线
-    }
+    axisLine: { show: true },
+    axisTick: { show: false },
+    splitLine: { show: true }
   },
   tooltip: {
     trigger: "axis",
@@ -113,6 +105,45 @@ const leftOption = ref({
     {
       type: "line",
       data: leftEmotionMap
+    }
+  ]
+})
+const rightOption = ref({
+  title: {
+    subtext: "*每个情感表示为当前时间节点至10秒后该音频片段的情感识别结果",
+    left: "right",
+    subtextStyle: {
+      fontSize: 12,
+      fontWeight: "normal",
+      color: "red"
+    }
+  },
+  xAxis: {
+    type: "category",
+    data: timeList,
+    axisLine: { show: true },
+    axisTick: { show: false },
+    splitLine: { show: true }
+  },
+  yAxis: {
+    type: "category",
+    data: ["消极", "中立", "积极"],
+    axisLine: { show: true },
+    axisTick: { show: false },
+    splitLine: { show: true }
+  },
+  tooltip: {
+    trigger: "axis",
+    formatter: function (params) {
+      const xValue = params[0].axisValue
+      const yValue = params[0].data
+      return `情感：${yValue}<br>时间：${xValue}`
+    }
+  },
+  series: [
+    {
+      type: "line",
+      data: rightEmotionMap
     }
   ]
 })
@@ -265,6 +296,7 @@ onBeforeMount(() => {
     <el-card shadow="never">
       <el-divider content-position="left">右声道音频</el-divider>
       <audio class="audio-player" ref="player3" crossorigin="anonymous" :src="rightAudioUrl" controls />
+      <v-chart class="chart" :option="rightOption" autoresize />
       <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas3" /></div>
     </el-card>
   </div>
