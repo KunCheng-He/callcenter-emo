@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, provide } from "vue"
+import { ref, onBeforeMount } from "vue"
 import { ElMessageBox } from "element-plus"
 import { useAVLine } from "vue-audio-visual"
 import { useRouter } from "vue-router"
@@ -9,13 +9,11 @@ import { getNOCheckAudioApi } from "@/api/audio"
 import { getEmotionForAudioApi } from "@/api/emotion"
 import { use } from "echarts/core"
 import { LineChart } from "echarts/charts"
-import { TitleComponent, GridComponent } from "echarts/components"
+import { TitleComponent, GridComponent, TooltipComponent } from "echarts/components"
 import { CanvasRenderer } from "echarts/renderers"
-import VChart, { THEME_KEY } from "vue-echarts"
+import VChart from "vue-echarts"
 
-use([TitleComponent, LineChart, CanvasRenderer, GridComponent])
-
-// provide(THEME_KEY, "dark")
+use([TitleComponent, LineChart, CanvasRenderer, GridComponent, TooltipComponent])
 
 defineOptions({
   name: "CheckAudio"
@@ -54,6 +52,8 @@ const rightAudioUrl = ref<string>("")
 const frameNum = ref<number>(0)
 const leftEmotion = ref<number[] | null>(null)
 const rightEmotion = ref<number[] | null>(null)
+const leftEmotionMap = ref<string[]>([])
+const rightEmotionMap = ref<string[]>([])
 
 /** 各音乐播放器及其画布 */
 const player1 = ref(null)
@@ -63,40 +63,56 @@ const canvas2 = ref(null)
 const player3 = ref(null)
 const canvas3 = ref(null)
 
-const flag = ref<boolean>(false)
-const show = () => {
-  flag.value = !flag.value
-}
-
 /** 音频情感图表相关 */
 const timeList = ref<string[]>([]) // 图表横坐标
 const leftOption = ref({
   title: {
-    text: "Referer of a Website",
-    subtext: "Fake Data",
-    left: "center"
+    subtext: "*每个情感表示为当前时间节点至10秒后该音频片段的情感识别结果",
+    left: "right",
+    subtextStyle: {
+      fontSize: 12,
+      fontWeight: "normal",
+      color: "red"
+    }
   },
   xAxis: {
     type: "category",
-    data: timeList.value
+    data: timeList,
+    axisLine: {
+      show: true // 显示x轴线
+    },
+    axisTick: {
+      show: false // 隐藏x轴刻度
+    },
+    splitLine: {
+      show: true // 显示网格线
+    }
   },
   yAxis: {
     type: "category",
-    data: ["积极", "中立", "消极"]
+    data: ["消极", "中立", "积极"],
+    axisLine: {
+      show: true // 显示y轴线
+    },
+    axisTick: {
+      show: false // 隐藏y轴刻度
+    },
+    splitLine: {
+      show: true // 显示网格线
+    }
+  },
+  tooltip: {
+    trigger: "axis",
+    formatter: function (params) {
+      const xValue = params[0].axisValue
+      const yValue = params[0].data
+      return `情感：${yValue}<br>时间：${xValue}`
+    }
   },
   series: [
     {
-      name: "Access From",
       type: "line",
-      radius: "50%",
-      data: leftEmotion.value,
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: "rgba(0, 0, 0, 0.5)"
-        }
-      }
+      data: leftEmotionMap
     }
   ]
 })
@@ -112,7 +128,7 @@ const getNoCheckAudio = async () => {
 }
 
 /** 音频已经全部审核完成则跳转到首页 */
-const isHave = () => {
+const isHave = async () => {
   if (noCheckAudioList.value.length == 0) {
     ElMessageBox.alert("音频全部审核完成，确认后将跳转首页。", "提示", {
       confirmButtonText: "OK",
@@ -124,6 +140,8 @@ const isHave = () => {
     noCheckAudio.value = noCheckAudioList.value[0]
     // 合成音频后端 url
     getAudioUrl()
+    // 设置音乐播放器
+    setPlayer()
     // 请求音频情感
     getEmotion()
   }
@@ -147,6 +165,8 @@ const getEmotion = async () => {
     rightEmotion.value = emotionData.right_emotions
     // 生成时间列表
     generateTimeList()
+    // 映射情感
+    mapEmotion()
   } catch (error) {
     ElMessageBox.alert("情感结果请求失败，确认后将跳转首页。", "提示", {
       confirmButtonText: "OK",
@@ -195,10 +215,37 @@ const generateTimeList = () => {
   }
 }
 
+/** 根据情感数值做映射 */
+const mapEmotion = () => {
+  if (leftEmotion.value) {
+    leftEmotionMap.value = leftEmotion.value.map((value) => {
+      switch (value) {
+        case 0:
+          return "积极"
+        case 1:
+          return "中立"
+        case 2:
+          return "消极"
+      }
+    })
+  }
+  if (rightEmotion.value) {
+    rightEmotionMap.value = rightEmotion.value.map((value) => {
+      switch (value) {
+        case 0:
+          return "积极"
+        case 1:
+          return "中立"
+        case 2:
+          return "消极"
+      }
+    })
+  }
+}
+
 // 在页面加载前调用的方法
 onBeforeMount(() => {
   getNoCheckAudio() // 获取未审核音频列表
-  setPlayer() // 设置音乐播放器
 })
 </script>
 
@@ -212,8 +259,7 @@ onBeforeMount(() => {
     <el-card shadow="never">
       <el-divider content-position="left">左声道音频</el-divider>
       <audio class="audio-player" ref="player2" crossorigin="anonymous" :src="leftAudioUrl" controls />
-      <v-chart v-if="flag" class="chart" :option="leftOption" autoresize />
-      <el-button type="primary" size="large" @click.prevent="show">显示</el-button>
+      <v-chart class="chart" :option="leftOption" autoresize />
       <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas2" /></div>
     </el-card>
     <el-card shadow="never">
@@ -248,6 +294,7 @@ onBeforeMount(() => {
   justify-content: center;
   align-items: center;
   height: 20vh; // 可根据需要调整高度，这里设置为视口的高度
+  margin-top: -20px;
 
   .audio-canvas {
     // 设置canvas样式，可以根据需要进行调整
@@ -256,6 +303,8 @@ onBeforeMount(() => {
 }
 
 .chart {
-  height: 100vh;
+  width: 100%;
+  height: 30vh;
+  margin-bottom: -50px;
 }
 </style>
