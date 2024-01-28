@@ -25,7 +25,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         ]
         read_only_fields = [
             'is_superuser', 'is_staff', 'is_active', 'last_login', 'date_joined',
-            'audio_num', 'user_emo_up', 'user_emo_norm', 'user_emo_down', 'emo_up', 'emo_norm', 'emo_down', 'check_num', 'cut_num'
+            'audio_num', 'user_emo_up', 'user_emo_norm', 'user_emo_down', 'emo_up', 'emo_norm', 'emo_down'
         ]
 
 

@@ -19,3 +19,5 @@ export interface UserData {
 }
 
 export type UserResponseData = Array<UserData>
+
+export type UpdateUserData = { check_num: number; cut_num: number }

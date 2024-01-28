@@ -1,5 +1,5 @@
 import { request } from "@/utils/service"
-import type * as User from "./types/user"
+import * as User from "./types/user"
 
 /** 添加用户 */
 export function addUserApi(data: User.UserRequestData) {
@@ -18,5 +18,14 @@ export function getCSUserApi() {
     params: {
       role: "客服"
     }
+  })
+}
+
+/** 更新用户信息: 审查数 - 剪辑数 */
+export function updateUserApi(id: number, data: User.UpdateUserData) {
+  return request<User.UserData>({
+    url: `/users/${id}/`,
+    method: "patch",
+    data
   })
 }

@@ -7,6 +7,7 @@ import { getUserInfo } from "@/utils/cache/cookies"
 import { type AudioData } from "@/api/audio/types/audio"
 import { getNOCheckAudioApi, updateAudioCheckedApi } from "@/api/audio"
 import { getEmotionForAudioApi } from "@/api/emotion"
+import { updateUserApi } from "@/api/user"
 import { use } from "echarts/core"
 import { LineChart } from "echarts/charts"
 import { TitleComponent, GridComponent, TooltipComponent } from "echarts/components"
@@ -279,8 +280,13 @@ const mapEmotion = () => {
 /** 该音频项通过检查 */
 const passChecked = async () => {
   try {
+    // 音频 checked 变更
     const id = Number(noCheckAudio.value.url.match(/\/audio\/(\d+)\/$/)[1])
     await updateAudioCheckedApi(id)
+    // 用户审查数变更
+    const userid = Number(userinfo.url.match(/\/users\/(\d+)\/$/)[1])
+    const check_num = Number(userinfo.check_num) + 1
+    await updateUserApi(userid, { check_num: check_num })
   } catch (error) {
     ElMessageBox.alert("审阅结果提交失败，确认后将跳转首页。", "提示", {
       confirmButtonText: "OK",
