@@ -15,7 +15,7 @@ class AudioViewSet(viewsets.ModelViewSet):
     """ 音频视图集 """
     queryset = Audio.objects.all()
     serializer_class = AudioSerializer
-    http_method_names = ['get']
+    http_method_names = ['get', 'patch']
 
     def get_queryset(self):
         checked = self.request.query_params.get('checked', None)

@@ -8,4 +8,4 @@ class AudioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Audio
         fields = ['url', 'orig_file_path', 'left_file_path', 'right_file_path', 'upload_event_id', 'checked']
-        read_only_fields = ['upload_event_id', 'checked']
+        read_only_fields = ['upload_event_id']

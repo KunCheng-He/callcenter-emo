@@ -5,7 +5,7 @@ import { useAVLine } from "vue-audio-visual"
 import { useRouter } from "vue-router"
 import { getUserInfo } from "@/utils/cache/cookies"
 import { type AudioData } from "@/api/audio/types/audio"
-import { getNOCheckAudioApi } from "@/api/audio"
+import { getNOCheckAudioApi, updateAudioCheckedApi } from "@/api/audio"
 import { getEmotionForAudioApi } from "@/api/emotion"
 import { use } from "echarts/core"
 import { LineChart } from "echarts/charts"
@@ -18,6 +18,8 @@ use([TitleComponent, LineChart, CanvasRenderer, GridComponent, TooltipComponent]
 defineOptions({
   name: "CheckAudio"
 })
+
+const loading = ref<boolean>(false)
 
 const router = useRouter()
 
@@ -274,6 +276,21 @@ const mapEmotion = () => {
   }
 }
 
+/** 该音频项通过检查 */
+const passChecked = async () => {
+  try {
+    const id = Number(noCheckAudio.value.url.match(/\/audio\/(\d+)\/$/)[1])
+    await updateAudioCheckedApi(id)
+  } catch (error) {
+    ElMessageBox.alert("审阅结果提交失败，确认后将跳转首页。", "提示", {
+      confirmButtonText: "OK",
+      callback: () => {
+        router.push({ path: "/" })
+      }
+    })
+  }
+}
+
 // 在页面加载前调用的方法
 onBeforeMount(() => {
   getNoCheckAudio() // 获取未审核音频列表
@@ -298,6 +315,9 @@ onBeforeMount(() => {
       <audio class="audio-player" ref="player3" crossorigin="anonymous" :src="rightAudioUrl" controls />
       <v-chart class="chart" :option="rightOption" autoresize />
       <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas3" /></div>
+    </el-card>
+    <el-card shadow="never">
+      <el-button :loading="loading" type="primary" size="large" @click.prevent="passChecked">通过</el-button>
     </el-card>
   </div>
 </template>

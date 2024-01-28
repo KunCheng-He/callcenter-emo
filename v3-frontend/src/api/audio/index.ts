@@ -1,5 +1,5 @@
 import { request } from "@/utils/service"
-import type * as Audio from "./types/audio"
+import * as Audio from "./types/audio"
 
 /** 获取未审计音频 */
 export function getNOCheckAudioApi() {
@@ -19,6 +19,17 @@ export function getAudioApi(path: string) {
     method: "get",
     params: {
       path: path
+    }
+  })
+}
+
+/** 更新音频文件数据项 */
+export function updateAudioCheckedApi(id: number) {
+  return request<Audio.AudioData>({
+    url: `/audio/${id}/`,
+    method: "patch",
+    data: {
+      checked: true
     }
   })
 }
