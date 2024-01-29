@@ -280,6 +280,7 @@ const mapEmotion = () => {
 /** 该音频项通过检查 */
 const passChecked = async () => {
   try {
+    loading.value = true
     // 音频 checked 变更
     const id = Number(noCheckAudio.value.url.match(/\/audio\/(\d+)\/$/)[1])
     await updateAudioCheckedApi(id)
@@ -287,6 +288,9 @@ const passChecked = async () => {
     const userid = Number(userinfo.url.match(/\/users\/(\d+)\/$/)[1])
     const check_num = Number(userinfo.check_num) + 1
     await updateUserApi(userid, { check_num: check_num })
+    loading.value = false
+    // 刷新当前页面自动进入下一条音频审查
+    getNoCheckAudio()
   } catch (error) {
     ElMessageBox.alert("审阅结果提交失败，确认后将跳转首页。", "提示", {
       confirmButtonText: "OK",
@@ -323,6 +327,7 @@ onBeforeMount(() => {
       <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas3" /></div>
     </el-card>
     <el-card shadow="never">
+      <el-button :loading="loading" type="primary" size="large" @click.prevent="">剪辑音频片段</el-button>
       <el-button :loading="loading" type="primary" size="large" @click.prevent="passChecked">通过</el-button>
     </el-card>
   </div>
