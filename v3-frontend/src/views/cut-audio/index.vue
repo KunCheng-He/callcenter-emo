@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from "vue"
+import { ref, onBeforeMount, reactive } from "vue"
 import { ElMessageBox, ElMessage } from "element-plus"
+import { type FormInstance, type FormRules } from "element-plus"
 import { useAVLine } from "vue-audio-visual"
 import { use } from "echarts/core"
 import { LineChart } from "echarts/charts"
@@ -77,6 +78,21 @@ const showOption = ref({
 /** 剪辑相关 */
 const ltime = ref(0)
 const rtime = ref(0)
+
+/** 情感标注相关 */
+const dingFormRef = ref<FormInstance | null>(null)
+const dingFormData = reactive({
+  role: "",
+  emotion: "",
+  text: "",
+  pleasure: ref(2.5),
+  action: ref(2.5)
+})
+const dingFormRules: FormRules = {
+  role: [{ required: true, message: "请选择当前音频片段所属的用户角色", trigger: "blur" }],
+  emotion: [{ required: true, message: "请选择当前音频片段的情感标签", trigger: "blur" }],
+  text: [{ required: true, message: "请输入当前音频片段的文本内容", trigger: "blur" }]
+}
 
 /** 设置音乐播放器 */
 const setPlayer = () => {
@@ -159,6 +175,24 @@ const rightTime = () => {
   rtime.value = player.value.currentTime
 }
 
+/** 提交剪辑片段 */
+const cutAudio = async () => {
+  dingFormRef.value?.validate((valid: boolean, fields) => {
+    if (valid) {
+      loading.value = true
+      console.log(dingFormData)
+      loading.value = false
+    } else {
+      console.error("表单校验不通过", fields)
+    }
+  })
+}
+
+/** 全部音频片段剪辑完成 */
+const comeBack = () => {
+  console.log("come back")
+}
+
 // 在页面加载前调用的方法
 onBeforeMount(() => {
   mapEmotion()
@@ -187,6 +221,72 @@ onBeforeMount(() => {
           <el-button type="primary" size="large" @click.prevent="rightTime"> 片段终: {{ rtime }} </el-button>
         </el-col>
       </el-row>
+    </el-card>
+    <el-card shadow="never">
+      <el-form ref="dingFormRef" :model="dingFormData" :rules="dingFormRules" @keyup.enter="cutAudio">
+        <el-row :gutter="20">
+          <el-col :span="2"><el-text class="mx-1" type="primary" size="large">角色</el-text></el-col>
+          <el-col :span="10">
+            <el-form-item prop="role">
+              <el-select v-model="dingFormData.role" placeholder="选择角色">
+                <el-option key="来电用户" label="来电用户" value="来电用户" />
+                <el-option key="服务客服" label="服务客服" value="服务客服" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2"><el-text class="mx-1" type="primary" size="large">离散情感</el-text></el-col>
+          <el-col :span="10">
+            <el-form-item prop="emotion">
+              <el-select v-model="dingFormData.emotion" placeholder="选择离散情感">
+                <el-option :key="0" label="积极-饱满" :value="0" />
+                <el-option :key="1" label="中性-日常" :value="1" />
+                <el-option :key="2" label="消极-随意" :value="2" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="2"><el-text class="mx-1" type="primary" size="large">音频文本</el-text></el-col>
+          <el-col :span="22">
+            <el-form-item prop="text">
+              <el-input v-model.trim="dingFormData.text" :rows="2" type="textarea" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="3"
+            ><el-text class="mx-1" type="primary" size="large"
+              >愉悦维评分 -> {{ dingFormData.pleasure }}</el-text
+            ></el-col
+          >
+          <el-col :span="21">
+            <el-form-item prop="pleasure">
+              <el-slider v-model.trim="dingFormData.pleasure" :min="0" :max="5" :step="0.1" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="3"
+            ><el-text class="mx-1" type="primary" size="large">激活维评分 -> {{ dingFormData.action }}</el-text></el-col
+          >
+          <el-col :span="21">
+            <el-form-item prop="action">
+              <el-slider v-model.trim="dingFormData.action" :min="0" :max="5" :step="0.1" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-button :loading="loading" type="primary" size="large" @click.prevent="comeBack"
+              >完成全部片段剪辑</el-button
+            >
+          </el-col>
+          <el-col :span="8" />
+          <el-col :span="8">
+            <el-button :loading="loading" type="primary" size="large" @click.prevent="cutAudio">添加音频片段</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
     </el-card>
   </div>
 </template>
@@ -234,5 +334,9 @@ onBeforeMount(() => {
   margin-bottom: 10px;
   padding-left: 10px;
   padding-right: 10px;
+}
+
+.el-text {
+  padding-bottom: 20px;
 }
 </style>
