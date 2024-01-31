@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue"
-import { ElMessageBox } from "element-plus"
+import { ElMessageBox, ElMessage } from "element-plus"
 import { useAVLine } from "vue-audio-visual"
 import { use } from "echarts/core"
 import { LineChart } from "echarts/charts"
@@ -133,10 +133,12 @@ const mapEmotion = () => {
 const changeChannel = () => {
   loading.value = true
   if (showChannel.value === "左声道音频") {
+    ElMessage({ message: "当前成功切换到 右声道 音频", type: "success" })
     showChannel.value = "右声道音频"
     showAudioUrl.value = nowAudioStore.rightAudioUrl
     showEmotionMap.value = rightEmotionMap.value
   } else {
+    ElMessage({ message: "当前成功切换到 左声道 音频", type: "success" })
     showChannel.value = "左声道音频"
     showAudioUrl.value = nowAudioStore.leftAudioUrl
     showEmotionMap.value = leftEmotionMap.value
