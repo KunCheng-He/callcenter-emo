@@ -13,6 +13,7 @@ import { LineChart } from "echarts/charts"
 import { TitleComponent, GridComponent, TooltipComponent } from "echarts/components"
 import { CanvasRenderer } from "echarts/renderers"
 import VChart from "vue-echarts"
+import { useNowAudioStore } from "@/store/modules/now-audio"
 
 use([TitleComponent, LineChart, CanvasRenderer, GridComponent, TooltipComponent])
 
@@ -25,6 +26,8 @@ const loading = ref<boolean>(false)
 const router = useRouter()
 
 const userinfo = getUserInfo()
+
+const nowAudioStore = useNowAudioStore()
 
 // 通过 userinfo 判断用户角色是否为审计，否则弹窗提示，跳转首页
 if (userinfo.role.match(/\/roles\/(\d+)\/$/)[1] != "2") {
@@ -41,18 +44,7 @@ if (userinfo.role.match(/\/roles\/(\d+)\/$/)[1] != "2") {
 /** 未审核音频列表 */
 const noCheckAudioList = ref<AudioData[]>([])
 
-/** 当前未审核音频 */
-const noCheckAudio = ref<AudioData | null>(null)
-
-/** 所有音频请求后端url */
-const oriAudioUrl = ref<string>("")
-const leftAudioUrl = ref<string>("")
-const rightAudioUrl = ref<string>("")
-
 /** 音频对应的情感 */
-const frameNum = ref<number>(0)
-const leftEmotion = ref<number[] | null>(null)
-const rightEmotion = ref<number[] | null>(null)
 const leftEmotionMap = ref<string[]>([])
 const rightEmotionMap = ref<string[]>([])
 
@@ -171,7 +163,7 @@ const isHave = async () => {
       }
     })
   } else {
-    noCheckAudio.value = noCheckAudioList.value[0]
+    nowAudioStore.noCheckAudio = noCheckAudioList.value[0]
     // 合成音频后端 url
     getAudioUrl()
     // 设置音乐播放器
@@ -184,19 +176,19 @@ const isHave = async () => {
 /** 合成音频后端 url */
 const getAudioUrl = () => {
   const baseUrl = "http://127.0.0.1:8000/get-audio/?path="
-  oriAudioUrl.value = baseUrl + noCheckAudio.value.orig_file_path
-  leftAudioUrl.value = baseUrl + noCheckAudio.value.left_file_path
-  rightAudioUrl.value = baseUrl + noCheckAudio.value.right_file_path
+  nowAudioStore.oriAudioUrl = baseUrl + nowAudioStore.noCheckAudio.orig_file_path
+  nowAudioStore.leftAudioUrl = baseUrl + nowAudioStore.noCheckAudio.left_file_path
+  nowAudioStore.rightAudioUrl = baseUrl + nowAudioStore.noCheckAudio.right_file_path
 }
 
 /** 请求情感结果 */
 const getEmotion = async () => {
   try {
-    const emotionDatas = await getEmotionForAudioApi(noCheckAudio.value.url.match(/\/audio\/(\d+)\/$/)[1])
+    const emotionDatas = await getEmotionForAudioApi(nowAudioStore.noCheckAudio.url.match(/\/audio\/(\d+)\/$/)[1])
     const emotionData = emotionDatas[0]
-    frameNum.value = emotionData.frame_num
-    leftEmotion.value = emotionData.left_emotions
-    rightEmotion.value = emotionData.right_emotions
+    nowAudioStore.frameNum = emotionData.frame_num
+    nowAudioStore.leftEmotion = emotionData.left_emotions
+    nowAudioStore.rightEmotion = emotionData.right_emotions
     // 生成时间列表
     generateTimeList()
     // 映射情感
@@ -214,19 +206,19 @@ const getEmotion = async () => {
 /** 设置音乐播放器 */
 const setPlayer = () => {
   useAVLine(player1, canvas1, {
-    src: oriAudioUrl,
+    src: nowAudioStore.oriAudioUrl,
     canvWidth: 600,
     canvHeight: 120,
     lineColor: ["#FFF", "rgb(0,255,127)", "#00f"]
   })
   useAVLine(player2, canvas2, {
-    src: leftAudioUrl,
+    src: nowAudioStore.leftAudioUrl,
     canvWidth: 600,
     canvHeight: 120,
     lineColor: ["#FFF", "rgb(0,255,127)", "#00f"]
   })
   useAVLine(player3, canvas3, {
-    src: rightAudioUrl,
+    src: nowAudioStore.rightAudioUrl,
     canvWidth: 600,
     canvHeight: 120,
     lineColor: ["#FFF", "rgb(0,255,127)", "#00f"]
@@ -235,8 +227,8 @@ const setPlayer = () => {
 
 /** 根据情感长度生成时间列表 */
 const generateTimeList = () => {
-  if (leftEmotion.value) {
-    const secondsList = leftEmotion.value.map((value, index) => {
+  if (nowAudioStore.leftEmotion) {
+    const secondsList = nowAudioStore.leftEmotion.map((value, index) => {
       const timeInSeconds = 2.5 * index
       return timeInSeconds
     })
@@ -251,8 +243,8 @@ const generateTimeList = () => {
 
 /** 根据情感数值做映射 */
 const mapEmotion = () => {
-  if (leftEmotion.value) {
-    leftEmotionMap.value = leftEmotion.value.map((value) => {
+  if (nowAudioStore.leftEmotion) {
+    leftEmotionMap.value = nowAudioStore.leftEmotion.map((value) => {
       switch (value) {
         case 0:
           return "积极"
@@ -263,8 +255,8 @@ const mapEmotion = () => {
       }
     })
   }
-  if (rightEmotion.value) {
-    rightEmotionMap.value = rightEmotion.value.map((value) => {
+  if (nowAudioStore.rightEmotion) {
+    rightEmotionMap.value = nowAudioStore.rightEmotion.map((value) => {
       switch (value) {
         case 0:
           return "积极"
@@ -277,20 +269,18 @@ const mapEmotion = () => {
   }
 }
 
-/** 该音频项通过检查 */
-const passChecked = async () => {
+/** 审阅完成的统一操作 */
+const completeChecked = async () => {
   try {
     loading.value = true
     // 音频 checked 变更
-    const id = Number(noCheckAudio.value.url.match(/\/audio\/(\d+)\/$/)[1])
+    const id = Number(nowAudioStore.noCheckAudio.url.match(/\/audio\/(\d+)\/$/)[1])
     await updateAudioCheckedApi(id)
     // 用户审查数变更
     const userid = Number(userinfo.url.match(/\/users\/(\d+)\/$/)[1])
     const check_num = Number(userinfo.check_num) + 1
     await updateUserApi(userid, { check_num: check_num })
     loading.value = false
-    // 刷新当前页面自动进入下一条音频审查
-    getNoCheckAudio()
   } catch (error) {
     ElMessageBox.alert("审阅结果提交失败，确认后将跳转首页。", "提示", {
       confirmButtonText: "OK",
@@ -299,6 +289,18 @@ const passChecked = async () => {
       }
     })
   }
+}
+
+/** 该音频项通过检查 */
+const passChecked = async () => {
+  await completeChecked()
+  // 刷新当前页面自动进入下一条音频审查
+  getNoCheckAudio()
+}
+
+/** 选择剪辑音频 */
+const cutAudio = () => {
+  console.log("cutAudio")
 }
 
 // 在页面加载前调用的方法
@@ -311,24 +313,31 @@ onBeforeMount(() => {
   <div class="app-container">
     <el-card shadow="never">
       <el-divider content-position="left">原始音频</el-divider>
-      <audio class="audio-player" ref="player1" crossorigin="anonymous" :src="oriAudioUrl" controls />
+      <audio class="audio-player" ref="player1" crossorigin="anonymous" :src="nowAudioStore.oriAudioUrl" controls />
       <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas1" /></div>
     </el-card>
     <el-card shadow="never">
       <el-divider content-position="left">左声道音频</el-divider>
-      <audio class="audio-player" ref="player2" crossorigin="anonymous" :src="leftAudioUrl" controls />
+      <audio class="audio-player" ref="player2" crossorigin="anonymous" :src="nowAudioStore.leftAudioUrl" controls />
       <v-chart class="chart" :option="leftOption" autoresize />
       <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas2" /></div>
     </el-card>
     <el-card shadow="never">
       <el-divider content-position="left">右声道音频</el-divider>
-      <audio class="audio-player" ref="player3" crossorigin="anonymous" :src="rightAudioUrl" controls />
+      <audio class="audio-player" ref="player3" crossorigin="anonymous" :src="nowAudioStore.rightAudioUrl" controls />
       <v-chart class="chart" :option="rightOption" autoresize />
       <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas3" /></div>
     </el-card>
     <el-card shadow="never">
-      <el-button :loading="loading" type="primary" size="large" @click.prevent="">剪辑音频片段</el-button>
-      <el-button :loading="loading" type="primary" size="large" @click.prevent="passChecked">通过</el-button>
+      <el-row>
+        <el-col :span="8">
+          <el-button :loading="loading" type="primary" size="large" @click.prevent="cutAudio">剪辑音频片段</el-button>
+        </el-col>
+        <el-col :span="8" />
+        <el-col :span="8">
+          <el-button :loading="loading" type="primary" size="large" @click.prevent="passChecked">通过</el-button>
+        </el-col>
+      </el-row>
     </el-card>
   </div>
 </template>
@@ -369,5 +378,10 @@ onBeforeMount(() => {
   width: 100%;
   height: 30vh;
   margin-bottom: -50px;
+}
+
+.el-col {
+  display: grid;
+  margin-bottom: 10px;
 }
 </style>
