@@ -98,6 +98,16 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: "音频审计",
           svgIcon: "check"
         }
+      },
+      {
+        path: "cut",
+        component: () => import("@/views/cut-audio/index.vue"),
+        name: "CutAudio",
+        meta: {
+          title: "音频剪辑与标注",
+          svgIcon: "cut",
+          hidden: true
+        }
       }
     ]
   },

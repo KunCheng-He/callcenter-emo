@@ -299,8 +299,10 @@ const passChecked = async () => {
 }
 
 /** 选择剪辑音频 */
-const cutAudio = () => {
-  console.log("cutAudio")
+const cutAudio = async () => {
+  // await completeChecked()
+  // 进入音频剪辑页面
+  router.push({ path: "/checkaudio/cut" })
 }
 
 // 在页面加载前调用的方法
