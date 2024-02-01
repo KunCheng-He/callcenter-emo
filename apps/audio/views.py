@@ -5,8 +5,8 @@ from django.views import View
 from rest_framework import viewsets
 
 
-from .models import Audio
-from .serializers import AudioSerializer
+from .models import Audio, AudioPart
+from .serializers import AudioSerializer, AudioPartSerializer
 
 # Create your views here.
 
@@ -43,3 +43,11 @@ class AudioFileView(View):
             return response
         except:
             return HttpResponseNotFound("文件不存在")
+
+
+# 音频片段视图
+class AudioPartView(viewsets.ModelViewSet):
+    """ 音频片段视图 """
+    queryset = AudioPart.objects.all()
+    serializer_class = AudioPartSerializer
+    http_method_names = ['get', 'post']
