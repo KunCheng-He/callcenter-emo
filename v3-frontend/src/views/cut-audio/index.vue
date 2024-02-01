@@ -2,6 +2,7 @@
 import { ref, onBeforeMount, reactive } from "vue"
 import { ElMessageBox, ElMessage } from "element-plus"
 import { type FormInstance, type FormRules } from "element-plus"
+import { useRouter } from "vue-router"
 import { useAVLine } from "vue-audio-visual"
 import { use } from "echarts/core"
 import { LineChart } from "echarts/charts"
@@ -17,6 +18,8 @@ defineOptions({
 })
 
 const loading = ref<boolean>(false)
+
+const router = useRouter()
 
 const nowAudioStore = useNowAudioStore()
 
@@ -181,6 +184,8 @@ const cutAudio = async () => {
     if (valid) {
       loading.value = true
       console.log(dingFormData)
+      // 复原表单
+      resetForm()
       loading.value = false
     } else {
       console.error("表单校验不通过", fields)
@@ -193,8 +198,32 @@ const comeBack = () => {
   console.log("come back")
 }
 
+/** 复原表单 */
+const resetForm = () => {
+  ltime.value = 0.0
+  rtime.value = 0.0
+  dingFormData.role = ""
+  dingFormData.emotion = ""
+  dingFormData.text = ""
+  dingFormData.pleasure = 2.5
+  dingFormData.action = 2.5
+}
+
+/** nowAudioStore 不存在数据则跳转 */
+const validData = () => {
+  if (nowAudioStore.noCheckAudio === null) {
+    ElMessageBox.alert("请先审查音频，存在识别错误后，再剪辑音频片段。", "提示", {
+      confirmButtonText: "OK",
+      callback: () => {
+        router.push({ path: "/" })
+      }
+    })
+  }
+}
+
 // 在页面加载前调用的方法
 onBeforeMount(() => {
+  validData()
   mapEmotion()
   generateTimeList()
   setPlayer()
