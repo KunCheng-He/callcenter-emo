@@ -7,4 +7,20 @@ export interface AudioData {
   checked: Boolean
 }
 
+export interface AddAudioPartResponse {
+  url: string
+  user_id: string
+  cut_audio_path: string
+  start_time: number
+  end_time: number
+  part_path: string
+}
+
 export type GetAudioResponseData = Array<AudioData>
+
+export type AddAudioPartData = {
+  user_id: string
+  cut_audio_path: string
+  start_time: number
+  end_time: number
+}

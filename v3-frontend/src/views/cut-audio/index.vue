@@ -3,6 +3,7 @@ import { ref, onBeforeMount, reactive } from "vue"
 import { ElMessageBox, ElMessage } from "element-plus"
 import { type FormInstance, type FormRules } from "element-plus"
 import { useRouter } from "vue-router"
+import { getUserInfo } from "@/utils/cache/cookies"
 import { useAVLine } from "vue-audio-visual"
 import { use } from "echarts/core"
 import { LineChart } from "echarts/charts"
@@ -10,6 +11,7 @@ import { TitleComponent, GridComponent, TooltipComponent } from "echarts/compone
 import { CanvasRenderer } from "echarts/renderers"
 import VChart from "vue-echarts"
 import { useNowAudioStore } from "@/store/modules/now-audio"
+import { addAudioPartApi } from "@/api/audio"
 
 use([TitleComponent, LineChart, CanvasRenderer, GridComponent, TooltipComponent])
 
@@ -22,6 +24,8 @@ const loading = ref<boolean>(false)
 const router = useRouter()
 
 const nowAudioStore = useNowAudioStore()
+
+const userInfo = getUserInfo()
 
 /** 音频对应的情感 */
 const leftEmotionMap = ref<string[]>([])
@@ -79,8 +83,12 @@ const showOption = ref({
 })
 
 /** 剪辑相关 */
-const ltime = ref(0)
-const rtime = ref(0)
+const cutData = reactive({
+  user_id: userInfo.url,
+  cut_audio_path: "",
+  start_time: 0.0,
+  end_time: 0.0
+})
 
 /** 情感标注相关 */
 const dingFormRef = ref<FormInstance | null>(null)
@@ -88,8 +96,8 @@ const dingFormData = reactive({
   role: "",
   emotion: "",
   text: "",
-  pleasure: ref(2.5),
-  action: ref(2.5)
+  pleasure: 2.5,
+  action: 2.5
 })
 const dingFormRules: FormRules = {
   role: [{ required: true, message: "请选择当前音频片段所属的用户角色", trigger: "blur" }],
@@ -163,29 +171,32 @@ const changeChannel = () => {
     showEmotionMap.value = leftEmotionMap.value
     console.log(leftEmotionMap.value)
   }
-  ltime.value = 0.0
-  rtime.value = 0.0
+  cutData.start_time = 0.0
+  cutData.end_time = 0.0
   loading.value = false
 }
 
 /** 确定左侧剪辑时间 */
 const leftTime = () => {
-  ltime.value = player.value.currentTime
+  cutData.start_time = player.value.currentTime
 }
 
 /** 确定右侧剪辑时间 */
 const rightTime = () => {
-  rtime.value = player.value.currentTime
+  cutData.end_time = player.value.currentTime
 }
 
 /** 提交剪辑片段 */
 const cutAudio = async () => {
-  dingFormRef.value?.validate((valid: boolean, fields) => {
+  const url = new URL(showAudioUrl.value)
+  const params = new URLSearchParams(url.search)
+  cutData.cut_audio_path = params.get("path")
+  dingFormRef.value?.validate(async (valid: boolean, fields) => {
     if (valid) {
       loading.value = true
-      console.log(dingFormData)
-      // 复原表单
-      resetForm()
+      // 提交剪辑片段
+      const res = await addAudioPartApi(cutData)
+      console.log(res)
       loading.value = false
     } else {
       console.error("表单校验不通过", fields)
@@ -200,8 +211,8 @@ const comeBack = () => {
 
 /** 复原表单 */
 const resetForm = () => {
-  ltime.value = 0.0
-  rtime.value = 0.0
+  cutData.start_time = 0.0
+  cutData.end_time = 0.0
   dingFormData.role = ""
   dingFormData.emotion = ""
   dingFormData.text = ""
@@ -241,13 +252,15 @@ onBeforeMount(() => {
     <el-card shadow="never">
       <el-row>
         <el-col :span="8">
-          <el-button type="primary" size="large" @click.prevent="leftTime"> 片段始: {{ ltime }} </el-button>
+          <el-button type="primary" size="large" @click.prevent="leftTime">
+            片段始: {{ cutData.start_time }}
+          </el-button>
         </el-col>
         <el-col :span="8">
           <el-button :loading="loading" type="primary" size="large" @click.prevent="changeChannel">切换声道</el-button>
         </el-col>
         <el-col :span="8">
-          <el-button type="primary" size="large" @click.prevent="rightTime"> 片段终: {{ rtime }} </el-button>
+          <el-button type="primary" size="large" @click.prevent="rightTime"> 片段终: {{ cutData.end_time }} </el-button>
         </el-col>
       </el-row>
     </el-card>

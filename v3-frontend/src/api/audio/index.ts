@@ -33,3 +33,12 @@ export function updateAudioCheckedApi(id: number) {
     }
   })
 }
+
+/** 添加剪辑音频片段 */
+export function addAudioPartApi(data: Audio.AddAudioPartData) {
+  return request<Audio.AddAudioPartResponse>({
+    url: "/audio-part/",
+    method: "post",
+    data: data
+  })
+}
