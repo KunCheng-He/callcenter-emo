@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'apps.upload_events',  # 上传事件
     'apps.audio',          # 音频处理
     'apps.emotion',        # 音频情感识别
+    'apps.ding_label',     # 情感标注
     'drf_spectacular',     # OpenAPI
 ]
 
