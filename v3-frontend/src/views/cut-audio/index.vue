@@ -12,6 +12,7 @@ import { CanvasRenderer } from "echarts/renderers"
 import VChart from "vue-echarts"
 import { useNowAudioStore } from "@/store/modules/now-audio"
 import { addAudioPartApi } from "@/api/audio"
+import { addDingLabelApi } from "@/api/ding-label"
 
 use([TitleComponent, LineChart, CanvasRenderer, GridComponent, TooltipComponent])
 
@@ -93,15 +94,16 @@ const cutData = reactive({
 /** 情感标注相关 */
 const dingFormRef = ref<FormInstance | null>(null)
 const dingFormData = reactive({
-  role: "",
-  emotion: "",
+  audio_part_id: "",
+  audio_role: "",
+  emotion_label: 0,
   text: "",
   pleasure: 2.5,
   action: 2.5
 })
 const dingFormRules: FormRules = {
-  role: [{ required: true, message: "请选择当前音频片段所属的用户角色", trigger: "blur" }],
-  emotion: [{ required: true, message: "请选择当前音频片段的情感标签", trigger: "blur" }],
+  audio_role: [{ required: true, message: "请选择当前音频片段所属的用户角色", trigger: "blur" }],
+  emotion_label: [{ required: true, message: "请选择当前音频片段的情感标签", trigger: "blur" }],
   text: [{ required: true, message: "请输入当前音频片段的文本内容", trigger: "blur" }]
 }
 
@@ -205,8 +207,14 @@ const cutAudio = async () => {
         loading.value = true
         // 提交剪辑片段
         const res = await addAudioPartApi(cutData)
-        console.log(res)
+        // 提交标注情感
+        dingFormData.audio_part_id = res.url
+        await addDingLabelApi(dingFormData)
         loading.value = false
+        // 复原表单
+        resetForm()
+        // 弹窗提示用户添加剪辑片段成功
+        ElMessage({ message: "音频片段添加成功", type: "success" })
       } else {
         console.error("表单校验不通过", fields)
       }
@@ -223,8 +231,8 @@ const comeBack = () => {
 const resetForm = () => {
   cutData.start_time = 0.0
   cutData.end_time = 0.0
-  dingFormData.role = ""
-  dingFormData.emotion = ""
+  dingFormData.audio_role = ""
+  dingFormData.emotion_label = 0
   dingFormData.text = ""
   dingFormData.pleasure = 2.5
   dingFormData.action = 2.5
@@ -279,8 +287,8 @@ onBeforeMount(() => {
         <el-row :gutter="20">
           <el-col :span="2"><el-text class="mx-1" type="primary" size="large">角色</el-text></el-col>
           <el-col :span="10">
-            <el-form-item prop="role">
-              <el-select v-model="dingFormData.role" placeholder="选择角色">
+            <el-form-item prop="audio_role">
+              <el-select v-model="dingFormData.audio_role" placeholder="选择角色">
                 <el-option key="来电用户" label="来电用户" value="来电用户" />
                 <el-option key="服务客服" label="服务客服" value="服务客服" />
               </el-select>
@@ -288,8 +296,8 @@ onBeforeMount(() => {
           </el-col>
           <el-col :span="2"><el-text class="mx-1" type="primary" size="large">离散情感</el-text></el-col>
           <el-col :span="10">
-            <el-form-item prop="emotion">
-              <el-select v-model="dingFormData.emotion" placeholder="选择离散情感">
+            <el-form-item prop="emotion_label">
+              <el-select v-model="dingFormData.emotion_label" placeholder="选择离散情感">
                 <el-option :key="0" label="积极-饱满" :value="0" />
                 <el-option :key="1" label="中性-日常" :value="1" />
                 <el-option :key="2" label="消极-随意" :value="2" />
