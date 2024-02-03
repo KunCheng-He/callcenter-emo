@@ -1,20 +1,13 @@
 import os
 import time
+from urllib.parse import urlparse
 
 from cc_celery.main import app
-from .tools import get_upload_event_info, unzip_file, mp3_add_database
+from .tools import get_upload_event_info, unzip_file, mp3_add_database, cut_audio_save
 from .ai_ser.recognition import recognize_sentiment
-from apps.audio.models import Audio
+from apps.audio.models import Audio, AudioPart
 from apps.emotion.models import Emotion
 from apps.accounts.models import CustomUser
-
-
-# 异步测试任务
-@app.task
-def test_task():
-    print('当前程序执行路径', os.getcwd())
-    time.sleep(5)
-    return 'test_task'
 
 
 @app.task
@@ -82,3 +75,15 @@ def emotion_recognition(audio_id: int, user_id: int):
     user_object.emo_down = user_object.emo_down + right_emotions.count(2)
     user_object.save()
     return f"audio_id:{audio_id} emotion recognition success, add to emotion database, emotion_id:{emotion_object.id}"
+
+
+@app.task
+def audio_cut(ori_data: dict):
+    # 提取ID获取原始音频片段实例
+    audio_part_id = int(urlparse(ori_data['url']).path.split('/')[-2])
+    part_obj = AudioPart.objects.get(id=audio_part_id)
+    # 截取片段并更新数据
+    save_path = cut_audio_save(part_obj.cut_audio_path, part_obj.start_time, part_obj.end_time)
+    part_obj.part_path = save_path
+    part_obj.save()
+    return f"audio_part_id:{audio_part_id} cut success, save_path:{save_path}"

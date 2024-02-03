@@ -110,3 +110,4 @@ callcenter_emo/config.py
 .vscode/
 upload_files/
 *.pth
+cut_files/

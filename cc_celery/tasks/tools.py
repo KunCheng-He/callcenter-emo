@@ -1,6 +1,6 @@
 # 一些基本的处理方法
 
-import re, os, zipfile
+import re, os, zipfile, secrets
 from pydub import AudioSegment
 
 from apps.audio.models import Audio
@@ -109,6 +109,36 @@ def mp3_add_database(event_id: int, file_path: str, user_id: int):
     user_object.audio_num = user_object.audio_num + 1
     user_object.save()
     return audio_id
+
+
+def cut_audio_save(ori_audio_path: str, start_time: float, end_time:float):
+    """
+    截取音频文件并保存
+
+    Args:
+        ori_audio_path (str): 原始音频文件路径
+        start_time (float): 截取开始时间（秒）
+        end_time (float): 截取结束时间（秒）
+
+    Returns:
+        str: 保存的音频文件路径
+    """
+    # 拼接完整路径
+    audio_path = os.path.join(os.getcwd(), ori_audio_path[1:])
+    # 切分处理
+    audio = AudioSegment.from_file(audio_path)
+    start = int(start_time * 1000)  # 转为 ms
+    end = int(end_time * 1000)
+    cut_audio = audio[start:end]
+    # 生成保存路径与保存文件名
+    save_dir = os.path.dirname(audio_path).replace("upload_files", "cut_files")
+    if os.path.exists(save_dir) == False:
+        os.makedirs(save_dir)
+    save_name = os.path.basename(audio_path).split(".")[0] + "_" + secrets.token_hex(3) + ".wav"
+    save_path = os.path.join(save_dir, save_name)
+    # 保存文件
+    cut_audio.export(save_path, format="wav")
+    return save_path.replace(os.getcwd(), "")
 
 
 if __name__ == '__main__':

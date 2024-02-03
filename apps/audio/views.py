@@ -7,6 +7,7 @@ from rest_framework import viewsets
 
 from .models import Audio, AudioPart
 from .serializers import AudioSerializer, AudioPartSerializer
+from cc_celery.tasks import tasks
 
 # Create your views here.
 
@@ -51,3 +52,11 @@ class AudioPartView(viewsets.ModelViewSet):
     queryset = AudioPart.objects.all()
     serializer_class = AudioPartSerializer
     http_method_names = ['get', 'post']
+
+    def perform_create(self, serializer):
+        # 保存音频片段实例
+        serializer.save()
+        # 获取实例数据
+        data = serializer.data
+        # 调用异步任务存储音频片段
+        tasks.audio_cut.delay(data)
