@@ -191,17 +191,27 @@ const cutAudio = async () => {
   const url = new URL(showAudioUrl.value)
   const params = new URLSearchParams(url.search)
   cutData.cut_audio_path = params.get("path")
-  dingFormRef.value?.validate(async (valid: boolean, fields) => {
-    if (valid) {
-      loading.value = true
-      // 提交剪辑片段
-      const res = await addAudioPartApi(cutData)
-      console.log(res)
-      loading.value = false
-    } else {
-      console.error("表单校验不通过", fields)
-    }
-  })
+  // 剪辑片段时间合法化检测
+  if (cutData.start_time > cutData.end_time) {
+    ElMessage({ message: "音频片段开始时间不能大于音频片段结束时间", type: "error" })
+  } else if (cutData.end_time - cutData.start_time < 1) {
+    ElMessage({ message: "音频片段过短，请重新剪辑", type: "error" })
+  } else if (cutData.end_time - cutData.start_time > 12) {
+    ElMessage({ message: "音频片段过长，请重新剪辑", type: "error" })
+  } else {
+    // 剪辑片段时间合法
+    dingFormRef.value?.validate(async (valid: boolean, fields) => {
+      if (valid) {
+        loading.value = true
+        // 提交剪辑片段
+        const res = await addAudioPartApi(cutData)
+        console.log(res)
+        loading.value = false
+      } else {
+        console.error("表单校验不通过", fields)
+      }
+    })
+  }
 }
 
 /** 全部音频片段剪辑完成 */
