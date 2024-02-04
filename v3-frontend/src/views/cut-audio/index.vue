@@ -224,7 +224,8 @@ const cutAudio = async () => {
 
 /** 全部音频片段剪辑完成 */
 const comeBack = () => {
-  console.log("come back")
+  // 全部剪辑完成则跳转回审查页面
+  router.push({ path: "/checkaudio/check" })
 }
 
 /** 复原表单 */

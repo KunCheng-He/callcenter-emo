@@ -1,3 +1,4 @@
+import os
 import torch
 from torch.utils.data import DataLoader
 
@@ -21,7 +22,7 @@ def recognize_sentiment(audio_file_path: str):
     dataset = AudioDataset(segmented_frames, sample_rate)
     data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
     # 加载识别模型
-    net_pth = "/home/alchemy/Code/callcenter-emo/cc_celery/tasks/ai_ser/models_pth/LightSERNet.pth"
+    net_pth = os.path.join(os.getcwd(), "cc_celery/tasks/ai_ser/models_pth/LightSERNet.pth")
     net = LightSERNet()
     net.load_state_dict(torch.load(net_pth, map_location=torch.device('cpu')))
     # 识别结果

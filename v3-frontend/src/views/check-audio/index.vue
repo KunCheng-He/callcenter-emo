@@ -300,7 +300,7 @@ const passChecked = async () => {
 
 /** 选择剪辑音频 */
 const cutAudio = async () => {
-  // await completeChecked()
+  await completeChecked()
   // 进入音频剪辑页面
   router.push({ path: "/checkaudio/cut" })
 }
