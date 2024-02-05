@@ -26,6 +26,9 @@ dependencies:
   lodash-es:
     specifier: 4.17.21
     version: 4.17.21
+  lunar-typescript:
+    specifier: ^1.7.1
+    version: 1.7.1
   mitt:
     specifier: 3.0.1
     version: 3.0.1
@@ -3745,6 +3748,10 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /lunar-typescript@1.7.1:
+    resolution: {integrity: sha512-geDGx8/EyT7LkEeWYNedE+ZWnMbfGzt312jx2grPxFJ/AQH571t1qijh/rWAp9tn5Bqlr8HyVzUS7XDvHWuhKA==}
+    dev: false
 
   /magic-string@0.30.5:
     resolution: {integrity: sha512-7xlpfBaQaP/T6Vh8MO/EqXSW5En6INHEvEXQiuff7Gku0PWjU3uf6w/j9o7O+SpB5fOAkrI5HeoNgwjEO0pFsA==}
