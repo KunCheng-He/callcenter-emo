@@ -3,7 +3,7 @@ import { onBeforeMount, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { type FormInstance, type FormRules } from "element-plus"
 import { Message, Lock, User } from "@element-plus/icons-vue"
-import { ElMessageBox } from "element-plus"
+import { ElMessageBox, ElMessage } from "element-plus"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import { getUserRoleApi } from "@/api/user-role"
 import { addUserApi } from "@/api/user"
@@ -50,6 +50,7 @@ const handleRegister = () => {
       try {
         // console.log(registerFormData)
         await addUserApi(registerFormData)
+        ElMessage({ message: "注册成功", type: "success" })
         router.push({ path: "/login" })
       } catch (error: any) {
         if (error.response.data?.email !== undefined) {

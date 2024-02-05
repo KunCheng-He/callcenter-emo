@@ -88,9 +88,9 @@ function createRequest(service: AxiosInstance) {
         Authorization: token ? `Bearer ${token}` : undefined,
         "Content-Type": "application/json"
       },
-      timeout: 5000,
+      timeout: 10000,
       // baseURL: import.meta.env.VITE_BASE_API,
-      baseURL: "http://127.0.0.1:8000/",
+      baseURL: "http://127.0.0.1:13331/",
       data: {}
     }
     // 将默认配置 defaultConfig 和传入的自定义配置 config 进行合并成为 mergeConfig

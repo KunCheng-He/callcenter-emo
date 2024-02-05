@@ -24,7 +24,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         error_messages={"unique": "该邮箱地址已经存在"}
     )
     username = CharField(
-        max_length=50, null=False, verbose_name='用户名',
+        max_length=50, null=False, unique=True, verbose_name='用户名',
     )
     role = ForeignKey(UserRole, on_delete=SET_NULL, null=True, related_name='users', verbose_name='用户角色')
     is_staff = BooleanField(

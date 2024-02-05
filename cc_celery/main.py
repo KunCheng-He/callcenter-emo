@@ -8,6 +8,11 @@ from callcenter_emo.config import broker_url, result_backend
 # 创建celery实例对象
 app = Celery("callcenter_emo", broker=broker_url, backend=result_backend)
 
+# 解决启动警告
+app.conf.update(
+    broker_connection_retry_on_startup=True,
+)
+
 # 把celery和django进行组合，识别和加载django的配置文件
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'callcenter_emo.settings')
 
