@@ -2,6 +2,7 @@
 import { ref } from "vue"
 import { useAVLine } from "vue-audio-visual"
 import HomeHeader from "./components/HomeHeader.vue"
+import NumerShow from "./components/NumerShow.vue"
 
 const player = ref(null)
 const canvas = ref(null)
@@ -18,6 +19,8 @@ useAVLine(player, canvas, {
   <div class="app-container">
     <!--  顶部用户信息 -->
     <el-card shadow="never"><HomeHeader /></el-card>
+    <!-- 系统部分统计数据展示 -->
+    <NumerShow />
     <el-card shadow="never">
       <el-divider content-position="left">原始音频</el-divider>
       <audio

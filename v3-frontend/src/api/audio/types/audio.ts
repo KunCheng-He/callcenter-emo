@@ -24,3 +24,5 @@ export type AddAudioPartData = {
   start_time: number
   end_time: number
 }
+
+export type GetAudioPartResponseData = Array<AddAudioPartResponse>

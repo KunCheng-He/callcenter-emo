@@ -21,6 +21,17 @@ export function getCSUserApi() {
   })
 }
 
+/** 获取审计用户 */
+export function getCheckUserApi() {
+  return request<User.UserResponseData>({
+    url: "/users/",
+    method: "get",
+    params: {
+      role: "审计"
+    }
+  })
+}
+
 /** 更新用户信息: 审查数 - 剪辑数 */
 export function updateUserApi(id: number, data: User.UpdateUserData) {
   return request<User.UserData>({

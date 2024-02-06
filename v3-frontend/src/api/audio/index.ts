@@ -42,3 +42,19 @@ export function addAudioPartApi(data: Audio.AddAudioPartData) {
     data: data
   })
 }
+
+/** 获取所有音频 */
+export function getAllAudioApi() {
+  return request<Audio.GetAudioResponseData>({
+    url: "/audio/",
+    method: "get"
+  })
+}
+
+/** 获取所有音频剪辑片段 */
+export function getAllAudioPartApi() {
+  return request<Audio.GetAudioPartResponseData>({
+    url: "/audio-part/",
+    method: "get"
+  })
+}
