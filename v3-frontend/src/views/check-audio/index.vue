@@ -174,7 +174,7 @@ const isHave = async () => {
 
 /** 合成音频后端 url */
 const getAudioUrl = () => {
-  const baseUrl = "http://127.0.0.1:8000/get-audio/?path="
+  const baseUrl = "http://127.0.0.1:13331/get-audio/?path="
   nowAudioStore.oriAudioUrl = baseUrl + nowAudioStore.noCheckAudio.orig_file_path
   nowAudioStore.leftAudioUrl = baseUrl + nowAudioStore.noCheckAudio.left_file_path
   nowAudioStore.rightAudioUrl = baseUrl + nowAudioStore.noCheckAudio.right_file_path
