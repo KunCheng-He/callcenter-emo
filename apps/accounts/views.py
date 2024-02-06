@@ -32,15 +32,25 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsOwnerOrReadCreate]
 
     def get_queryset(self):
+        query = CustomUser.objects.all()
         user_role = self.request.query_params.get('role', None)
+        sort = self.request.query_params.get('sort', None)
+        num = self.request.query_params.get('num', None)
         
         # 如果用户提供了角色参数，过滤出该角色下的用户
         if user_role:
             role_instance = get_object_or_404(UserRole, name=user_role)
-            return CustomUser.objects.filter(role=role_instance)
+            query = CustomUser.objects.filter(role=role_instance)
+
+        # 如果用户提供了排序参数，则按要求排序
+        if sort:
+            query = query.order_by("-" + sort)
+
+        # 如果用户提供了num参数，则返回该数量的用户
+        if num:
+            query = query[:int(num)]
         
-        # 否则返回所有用户
-        return CustomUser.objects.all()
+        return query
 
     def create(self, request, *args, **kwargs):
         """重写该方法，注册新用户时对password进行加密"""

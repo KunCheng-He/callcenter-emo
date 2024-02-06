@@ -40,91 +40,91 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="show-num-box">
-    <div class="show-box">
-      <div class="show">
-        <div>
-          <h3 class="title">客服人数</h3>
-          <p class="data">{{ csNum }}</p>
+  <el-row :gutter="20">
+    <el-col :span="6">
+      <div class="show-box">
+        <div class="show">
+          <div>
+            <h3 class="title">客服人数</h3>
+            <p class="data">{{ csNum }}</p>
+          </div>
+          <SvgIcon class="icon" name="kefu-user" />
         </div>
-        <SvgIcon class="icon" name="kefu-user" />
       </div>
-    </div>
-    <div class="show-box">
-      <div class="show">
-        <div>
-          <h3 class="title">审查人数</h3>
-          <p class="data">{{ checkNum }}</p>
+    </el-col>
+    <el-col :span="6">
+      <div class="show-box">
+        <div class="show">
+          <div>
+            <h3 class="title">审查人数</h3>
+            <p class="data">{{ checkNum }}</p>
+          </div>
+          <SvgIcon class="icon" name="check-user" />
         </div>
-        <SvgIcon class="icon" name="check-user" />
       </div>
-    </div>
-    <div class="show-box">
-      <div class="show">
-        <div>
-          <h3 class="title">音频总数</h3>
-          <p class="data">{{ audioNum }}</p>
+    </el-col>
+    <el-col :span="6">
+      <div class="show-box">
+        <div class="show">
+          <div>
+            <h3 class="title">音频总数</h3>
+            <p class="data">{{ audioNum }}</p>
+          </div>
+          <SvgIcon class="icon" name="audio" />
         </div>
-        <SvgIcon class="icon" name="audio" />
       </div>
-    </div>
-    <div class="show-box">
-      <div class="show">
-        <div>
-          <h3 class="title">剪辑总数</h3>
-          <p class="data">{{ audioPartNum }}</p>
+    </el-col>
+    <el-col :span="6">
+      <div class="show-box">
+        <div class="show">
+          <div>
+            <h3 class="title">剪辑总数</h3>
+            <p class="data">{{ audioPartNum }}</p>
+          </div>
+          <SvgIcon class="icon" name="cut-audio" />
         </div>
-        <SvgIcon class="icon" name="cut-audio" />
       </div>
-    </div>
-  </div>
+    </el-col>
+  </el-row>
 </template>
 
 <style lang="scss" scoped>
-.show-num-box {
-  display: flex;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 1.5rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  margin-bottom: 1.5rem;
+.show-box {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  border-radius: 0.375rem;
+  padding: 1.5rem;
+  transition-property: box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 0.15s;
+  transition-duration: 0.5s;
+  margin-bottom: 20px;
 
-  .show-box {
-    --tw-bg-opacity: 1;
-    background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-    border-radius: 0.375rem;
-    padding: 1.5rem;
-    transition-property: box-shadow;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 0.15s;
-    transition-duration: 0.5s;
+  .show {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-    .show {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .title {
+      font-size: 1rem;
+      line-height: 1.5rem;
+      --tw-text-opacity: 1;
+      color: rgb(148 163 184 / var(--tw-text-opacity));
+      margin-bottom: 0.5rem;
+    }
 
-      .title {
-        font-size: 1rem;
-        line-height: 1.5rem;
-        --tw-text-opacity: 1;
-        color: rgb(148 163 184 / var(--tw-text-opacity));
-        margin-bottom: 0.5rem;
-      }
+    .data {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+      font-weight: 600;
+      --tw-text-opacity: 1;
+      color: rgb(30 41 59 / var(--tw-text-opacity));
+    }
 
-      .data {
-        font-size: 1.875rem;
-        line-height: 2.25rem;
-        font-weight: 600;
-        --tw-text-opacity: 1;
-        color: rgb(30 41 59 / var(--tw-text-opacity));
-      }
-
-      .icon {
-        width: 9em;
-        height: 9em;
-        margin-left: 30px;
-      }
+    .icon {
+      width: 9em;
+      height: 9em;
+      margin-left: 30px;
     }
   }
 }

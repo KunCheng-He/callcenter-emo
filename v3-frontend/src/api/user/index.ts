@@ -40,3 +40,16 @@ export function updateUserApi(id: number, data: User.UpdateUserData) {
     data
   })
 }
+
+/** 获取指定排序的前面几个用户 */
+export function getTopUserApi(role: string, sort: string, num: number) {
+  return request<User.UserResponseData>({
+    url: "/users/",
+    method: "get",
+    params: {
+      role: role,
+      sort: sort,
+      num: num
+    }
+  })
+}
