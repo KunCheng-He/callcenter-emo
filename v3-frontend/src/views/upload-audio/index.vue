@@ -8,6 +8,7 @@ import { reactive, onBeforeMount } from "vue"
 import { type UserData } from "@/api/user/types/user"
 import { getCSUserApi } from "@/api/user"
 import { uploadApi } from "@/api/upload-audio"
+import { getUserInfo } from "@/utils/cache/cookies"
 
 defineOptions({
   name: "UploadAudio"
@@ -17,11 +18,19 @@ const router = useRouter()
 
 const loading = ref<boolean>(false)
 
+const userinfo = getUserInfo()
+
 // 角色列表
 const csUserList = ref<UserData[]>([])
 
 /** 上传表单元素的引用 */
 const uploadFormRef = ref<FormInstance | null>(null)
+
+/** 只有管理员可以上传音频 */
+if (userinfo.role !== null) {
+  ElMessage({ type: "warning", message: "上传呼叫中心业务音频请联系管理员" })
+  router.push({ path: "/" })
+}
 
 /** 上传表单数据 */
 const uploadFormData = reactive({
