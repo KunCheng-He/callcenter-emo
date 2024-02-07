@@ -86,4 +86,8 @@ def audio_cut(ori_data: dict):
     save_path = cut_audio_save(part_obj.cut_audio_path, part_obj.start_time, part_obj.end_time)
     part_obj.part_path = save_path
     part_obj.save()
+    # 更新用户剪辑片段数
+    user = part_obj.user_id
+    user.cut_num = user.cut_num + 1
+    user.save()
     return f"audio_part_id:{audio_part_id} cut success, save_path:{save_path}"
