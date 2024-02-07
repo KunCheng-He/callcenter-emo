@@ -7,7 +7,7 @@ import { getUserInfo } from "@/utils/cache/cookies"
 import { type AudioData } from "@/api/audio/types/audio"
 import { getNOCheckAudioApi, updateAudioCheckedApi } from "@/api/audio"
 import { getEmotionForAudioApi } from "@/api/emotion"
-import { updateUserApi } from "@/api/user"
+import { updateUserApi, getUserApi } from "@/api/user"
 import { use } from "echarts/core"
 import { LineChart } from "echarts/charts"
 import { TitleComponent, GridComponent, TooltipComponent } from "echarts/components"
@@ -277,7 +277,8 @@ const completeChecked = async () => {
     await updateAudioCheckedApi(id)
     // 用户审查数变更
     const userid = Number(userinfo.url.match(/\/users\/(\d+)\/$/)[1])
-    const check_num = Number(userinfo.check_num) + 1
+    const user = await getUserApi(userid)
+    const check_num = user.check_num + 1
     await updateUserApi(userid, { check_num: check_num })
     loading.value = false
   } catch (error) {

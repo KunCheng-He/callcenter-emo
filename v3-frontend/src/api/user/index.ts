@@ -53,3 +53,11 @@ export function getTopUserApi(role: string, sort: string, num: number) {
     }
   })
 }
+
+/** 获取具体用户 */
+export function getUserApi(id: number) {
+  return request<User.UserData>({
+    url: `/users/${id}/`,
+    method: "get"
+  })
+}
