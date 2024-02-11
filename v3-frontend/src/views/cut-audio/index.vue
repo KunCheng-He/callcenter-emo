@@ -315,11 +315,21 @@ onBeforeMount(() => {
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="3"
-            ><el-text class="mx-1" type="primary" size="large"
-              >愉悦维评分 -> {{ dingFormData.pleasure }}</el-text
-            ></el-col
-          >
+          <el-col :span="3" />
+          <el-col :span="21">
+            <div class="sam-tip">
+              <img src="@/assets/images/p1_sam.png" style="max-width: 15%" />
+              <img src="@/assets/images/p2_sam.png" style="max-width: 15%" />
+              <img src="@/assets/images/p3_sam.png" style="max-width: 15%" />
+              <img src="@/assets/images/p4_sam.png" style="max-width: 15%" />
+              <img src="@/assets/images/p5_sam.png" style="max-width: 15%" />
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="3">
+            <el-text class="mx-1" type="primary" size="large">愉悦维 > {{ dingFormData.pleasure }}</el-text>
+          </el-col>
           <el-col :span="21">
             <el-form-item prop="pleasure">
               <el-slider v-model.trim="dingFormData.pleasure" :min="0" :max="5" :step="0.1" />
@@ -327,13 +337,102 @@ onBeforeMount(() => {
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="3"
-            ><el-text class="mx-1" type="primary" size="large">激活维评分 -> {{ dingFormData.action }}</el-text></el-col
-          >
+          <el-col :span="3" />
+          <el-col :span="21">
+            <div class="sam-tip" style="margin-top: -25px">
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: red">
+                <el-text class="mx-1" size="large">愤怒的</el-text>
+                <el-text class="mx-1" size="large">轻蔑的</el-text>
+                <el-text class="mx-1" size="large">痛苦的</el-text>
+                <el-text class="mx-1" size="large">激怒的</el-text>
+              </div>
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: #FFA500">
+                <el-text class="mx-1" size="large">生气的</el-text>
+                <el-text class="mx-1" size="large">冷淡的</el-text>
+                <el-text class="mx-1" size="large">烦恼的</el-text>
+                <el-text class="mx-1" size="large">气愤的</el-text>
+              </div>
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: yellow">
+                <el-text class="mx-1" size="large" />
+                <el-text class="mx-1" size="large" />
+                <el-text class="mx-1" size="large">中性的</el-text>
+                <el-text class="mx-1" size="large" />
+                <el-text class="mx-1" size="large" />
+              </div>
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: #00FF00">
+                <el-text class="mx-1" size="large">注意的</el-text>
+                <el-text class="mx-1" size="large">温和的</el-text>
+                <el-text class="mx-1" size="large">满意的</el-text>
+                <el-text class="mx-1" size="large">快乐的</el-text>
+              </div>
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: #00FFFF">
+                <el-text class="mx-1" size="large">感兴趣的</el-text>
+                <el-text class="mx-1" size="large">友好的</el-text>
+                <el-text class="mx-1" size="large">高兴的</el-text>
+                <el-text class="mx-1" size="large">兴奋的</el-text>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-divider />
+        <el-row :gutter="20">
+          <el-col :span="3" />
+          <el-col :span="21">
+            <div class="sam-tip">
+              <img src="@/assets/images/a1_sam.png" style="max-width: 15%" />
+              <img src="@/assets/images/a2_sam.png" style="max-width: 15%" />
+              <img src="@/assets/images/a3_sam.png" style="max-width: 15%" />
+              <img src="@/assets/images/a4_sam.png" style="max-width: 15%" />
+              <img src="@/assets/images/a5_sam.png" style="max-width: 15%" />
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="3">
+            <el-text class="mx-1" type="primary" size="large">激活维 > {{ dingFormData.action }}</el-text>
+          </el-col>
           <el-col :span="21">
             <el-form-item prop="action">
               <el-slider v-model.trim="dingFormData.action" :min="0" :max="5" :step="0.1" />
             </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="3" />
+          <el-col :span="21">
+            <div class="sam-tip" style="margin-top: -25px">
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: #E6FFE6">
+                <el-text class="mx-1" size="large">困倦的</el-text>
+                <el-text class="mx-1" size="large">平静的</el-text>
+                <el-text class="mx-1" size="large">放松的</el-text>
+                <el-text class="mx-1" size="large">拘谨的</el-text>
+              </div>
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: #B3FFB3">
+                <el-text class="mx-1" size="large">心不在焉的</el-text>
+                <el-text class="mx-1" size="large">轻松的</el-text>
+                <el-text class="mx-1" size="large">平静的</el-text>
+                <el-text class="mx-1" size="large">忸怩的</el-text>
+              </div>
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: #80FF80">
+                <el-text class="mx-1" size="large" />
+                <el-text class="mx-1" size="large" />
+                <el-text class="mx-1" size="large">中性的</el-text>
+                <el-text class="mx-1" size="large" />
+                <el-text class="mx-1" size="large" />
+              </div>
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: #4DFF4D">
+                <el-text class="mx-1" size="large">注意的</el-text>
+                <el-text class="mx-1" size="large">有兴趣的</el-text>
+                <el-text class="mx-1" size="large">引人注意的</el-text>
+                <el-text class="mx-1" size="large">吃惊的</el-text>
+              </div>
+              <div class="inline-flex" h="35" w="35" m="2" style="background-color: #1AFF1A">
+                <el-text class="mx-1" size="large">清醒的</el-text>
+                <el-text class="mx-1" size="large">兴奋的</el-text>
+                <el-text class="mx-1" size="large">感兴趣的</el-text>
+                <el-text class="mx-1" size="large">惊讶的</el-text>
+              </div>
+            </div>
           </el-col>
         </el-row>
         <el-row>
@@ -399,5 +498,21 @@ onBeforeMount(() => {
 
 .el-text {
   padding-bottom: 20px;
+}
+
+.sam-tip {
+  display: flex;
+  justify-content: space-between;
+
+  .inline-flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .el-text {
+      padding-bottom: 7px;
+      padding-top: 7px;
+    }
+  }
 }
 </style>
