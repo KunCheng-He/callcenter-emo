@@ -10,7 +10,8 @@ import {
   ElDatePicker,
   ElTable,
   ElTableColumn,
-  ElDialog
+  ElDialog,
+  ElMessageBox
 } from "element-plus"
 
 interface SearchResult {
@@ -28,8 +29,9 @@ const searchForm = ref({
 })
 
 const userList = ref([
-  { id: "1", username: "User1" },
-  { id: "2", username: "User2" }
+  { id: "1", username: "kefu0" },
+  { id: "2", username: "kefu1" },
+  { id: "3", username: "kefu2" }
 ])
 
 const searchResult = ref<SearchResult[]>([])
@@ -39,18 +41,35 @@ const handleSearch = () => {
   // 根据搜索条件进行搜索，这里暂时假设直接从服务器获取搜索结果
   // 替换成您的实际搜索逻辑
   searchResult.value = [
-    { fileName: "File1", kefuName: "kefu1", time: "2024-04-10", userScore: 90, serviceScore: 85 },
-    { fileName: "File2", kefuName: "kefu2", time: "2024-04-09", userScore: 95, serviceScore: 88 }
+    { fileName: "z1.mp3", kefuName: "kefu2", time: "2024-02-05", userScore: 41.33, serviceScore: 32.98 },
+    { fileName: "z2.mp3", kefuName: "kefu2", time: "2024-02-05", userScore: 39.01, serviceScore: 30.45 },
+    { fileName: "z3.mp3", kefuName: "kefu2", time: "2024-02-05", userScore: 46.21, serviceScore: 50.75 },
+    { fileName: "hello.mp3", kefuName: "kefu2", time: "2024-02-07", userScore: 29.89, serviceScore: 36.96 }
   ]
   searched.value = true
 }
 
-const showDetail = () => {
-  // 点击查看详情按钮时展示详情弹窗
-  detailDialogVisible.value = true
+// 弹出对话框的开关
+const dialogVisible = ref(false)
+
+// 当前选中的行数据
+const selectedRow = ref<SearchResult | null>(null)
+
+// 处理每行查看详情的点击事件
+const handleTableRowClick = (row: SearchResult) => {
+  selectedRow.value = row
+  dialogVisible.value = true
 }
 
-const detailDialogVisible = ref(false)
+const handleClose = (done: () => void) => {
+  ElMessageBox.confirm("您确定要关闭此对话框吗？")
+    .then(() => {
+      done()
+    })
+    .catch(() => {
+      // catch error
+    })
+}
 
 defineOptions({
   name: "QueryChecked"
@@ -92,7 +111,7 @@ defineOptions({
           <el-table-column prop="serviceScore" label="服务评分" />
           <el-table-column label="查看详情">
             <template #default="{ row }">
-              <el-button type="text" @click="showDetail(row)">查看详情</el-button>
+              <el-button plain @click="handleTableRowClick(row)">查看详情</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -101,8 +120,17 @@ defineOptions({
     </el-card>
 
     <!-- 详情弹窗 -->
-    <el-dialog v-model:visible="detailDialogVisible" title="详情信息">
-      <!-- 这里放置详情信息的展示内容 -->
+    <el-dialog v-model="dialogVisible" title="音频详细信息" width="500" :before-close="handleClose">
+      <div v-if="selectedRow">
+        <p>文件名: {{ selectedRow.fileName }}</p>
+        <p>时间: {{ selectedRow.time }}</p>
+        <!-- 添加其他需要展示的信息 -->
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="dialogVisible = false">关闭</el-button>
+        </div>
+      </template>
     </el-dialog>
   </div>
 </template>
