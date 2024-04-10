@@ -103,6 +103,11 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: "/checkaudio",
     component: Layouts,
     redirect: "/checkaudio/check",
+    name: "CheckAudio",
+    meta: {
+      title: "情感审查",
+      svgIcon: "emocheck"
+    },
     children: [
       {
         path: "check",
@@ -121,6 +126,15 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: "音频剪辑与标注",
           svgIcon: "cut",
           hidden: true
+        }
+      },
+      {
+        path: "export",
+        component: () => import("@/views/export-audio/index.vue"),
+        name: "ExportAudio",
+        meta: {
+          title: "语料导出",
+          svgIcon: "export"
         }
       }
     ]
