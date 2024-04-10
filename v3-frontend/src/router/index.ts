@@ -70,17 +70,31 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: "/uploadaudio",
+    path: "/aicheck",
     component: Layouts,
-    redirect: "/uploadaudio/index",
+    redirect: "/aicheck/upload",
+    name: "AiCheck",
+    meta: {
+      title: "音频质检",
+      svgIcon: "aicheck"
+    },
     children: [
       {
-        path: "index",
+        path: "upload",
         component: () => import("@/views/upload-audio/index.vue"),
         name: "UploadAudio",
         meta: {
           title: "音频上传",
           svgIcon: "upload"
+        }
+      },
+      {
+        path: "query",
+        component: () => import("@/views/query-cheacked/index.vue"),
+        name: "QueryChecked",
+        meta: {
+          title: "质检查询",
+          svgIcon: "query"
         }
       }
     ]
