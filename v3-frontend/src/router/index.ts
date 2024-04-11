@@ -138,6 +138,22 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: "/sermodel",
+    component: Layouts,
+    redirect: "/sermodel/upload",
+    children: [
+      {
+        path: "upload",
+        component: () => import("@/views/upload-model/index.vue"),
+        name: "SERModel",
+        meta: {
+          title: "SER模型上传",
+          svgIcon: "sermodel"
+        }
+      }
+    ]
   }
   // {
   //   path: "/unocss",
