@@ -23,6 +23,25 @@ const userinfo = getUserInfo()
 // 角色列表
 const csUserList = ref<UserData[]>([])
 
+// 模型列表(先给出虚拟数据进行展示)
+const modelList = ref([
+  {
+    id: 1,
+    name: "Light-SERNet-20230805",
+    url: "pass"
+  },
+  {
+    id: 2,
+    name: "LSTM-Transformer-20230823",
+    url: "pass"
+  },
+  {
+    id: 3,
+    name: "DPFM-20230915",
+    url: "pass"
+  }
+])
+
 /** 上传表单元素的引用 */
 const uploadFormRef = ref<FormInstance | null>(null)
 
@@ -36,7 +55,8 @@ if (userinfo.role !== null) {
 const uploadFormData = reactive({
   // 两个字段，file是文件类型，接收用户上传的文件，cs_user_id是字符串字段
   file: null,
-  cs_user_id: ""
+  cs_user_id: "",
+  model_id: ""
 })
 
 /** 表单规则校验 */
@@ -137,6 +157,11 @@ onBeforeMount(() => {
         <el-form-item prop="cs_user_id">
           <el-select v-model="uploadFormData.cs_user_id" placeholder="选择文件所属的客服人员">
             <el-option v-for="item in csUserList" :key="item.url" :label="item.username" :value="item.url" />
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="model_id">
+          <el-select v-model="uploadFormData.model_id" placeholder="选择语音情感识别模型">
+            <el-option v-for="item in modelList" :key="item.url" :label="item.name" :value="item.url" />
           </el-select>
         </el-form-item>
         <el-button :loading="loading" type="primary" size="large" @click.prevent="handleUpload"
