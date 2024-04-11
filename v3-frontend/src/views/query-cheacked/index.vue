@@ -71,6 +71,93 @@ const handleClose = (done: () => void) => {
     })
 }
 
+/** 音频情感图表相关 */
+const timeList = ref<string[]>([]) // 图表横坐标
+const leftOption = ref({
+  title: {
+    subtext: "*每个情感表示为当前时间节点至10秒后该音频片段的情感识别结果",
+    left: "right",
+    subtextStyle: {
+      fontSize: 12,
+      fontWeight: "normal",
+      color: "red"
+    }
+  },
+  xAxis: {
+    type: "category",
+    data: timeList,
+    axisLine: {
+      show: true // 显示x轴线
+    },
+    axisTick: {
+      show: false // 隐藏x轴刻度
+    },
+    splitLine: {
+      show: true // 显示网格线
+    }
+  },
+  yAxis: {
+    type: "category",
+    data: ["消极", "中立", "积极"],
+    axisLine: { show: true },
+    axisTick: { show: false },
+    splitLine: { show: true }
+  },
+  tooltip: {
+    trigger: "axis",
+    formatter: function (params) {
+      const xValue = params[0].axisValue
+      const yValue = params[0].data
+      return `情感：${yValue}<br>时间：${xValue}`
+    }
+  },
+  series: [
+    {
+      type: "line",
+      data: ["消极", "中立", "积极"]
+    }
+  ]
+})
+const rightOption = ref({
+  title: {
+    subtext: "*每个情感表示为当前时间节点至10秒后该音频片段的情感识别结果",
+    left: "right",
+    subtextStyle: {
+      fontSize: 12,
+      fontWeight: "normal",
+      color: "red"
+    }
+  },
+  xAxis: {
+    type: "category",
+    data: timeList,
+    axisLine: { show: true },
+    axisTick: { show: false },
+    splitLine: { show: true }
+  },
+  yAxis: {
+    type: "category",
+    data: ["消极", "中立", "积极"],
+    axisLine: { show: true },
+    axisTick: { show: false },
+    splitLine: { show: true }
+  },
+  tooltip: {
+    trigger: "axis",
+    formatter: function (params) {
+      const xValue = params[0].axisValue
+      const yValue = params[0].data
+      return `情感：${yValue}<br>时间：${xValue}`
+    }
+  },
+  series: [
+    {
+      type: "line",
+      data: ["消极", "中立", "积极"]
+    }
+  ]
+})
+
 defineOptions({
   name: "QueryChecked"
 })
@@ -103,6 +190,7 @@ defineOptions({
     <el-card class="search-result">
       <h3 class="title">质检查询结果</h3>
       <div v-if="searched">
+        <el-button plain class="card-download-button">下载质检报告</el-button>
         <el-table :data="searchResult" border stripe>
           <el-table-column prop="fileName" label="文件名" />
           <el-table-column prop="kefuName" label="客服代表" />
@@ -121,9 +209,42 @@ defineOptions({
 
     <!-- 详情弹窗 -->
     <el-dialog v-model="dialogVisible" title="音频详细信息" width="500" :before-close="handleClose">
-      <div v-if="selectedRow">
-        <p>文件名: {{ selectedRow.fileName }}</p>
-        <p>时间: {{ selectedRow.time }}</p>
+      <div v-if="selectedRow" class="table-container">
+        <el-card shadow="never">
+          <el-divider content-position="left">原始音频</el-divider>
+          <audio
+            class="audio-player"
+            ref="player1"
+            crossorigin="anonymous"
+            src="http://127.0.0.1:8000/get-audio/?path=/upload_files/2024/02/05/test2_unzip/z1.mp3"
+            controls
+          />
+          <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas1" /></div>
+        </el-card>
+        <el-card shadow="never">
+          <el-divider content-position="left">左声道音频</el-divider>
+          <audio
+            class="audio-player"
+            ref="player2"
+            crossorigin="anonymous"
+            src="http://127.0.0.1:8000/get-audio/?path=/upload_files/2024/02/05/test2_unzip/z1_left.wav"
+            controls
+          />
+          <v-chart class="chart" :option="leftOption" autoresize />
+          <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas2" /></div>
+        </el-card>
+        <el-card shadow="never">
+          <el-divider content-position="left">右声道音频</el-divider>
+          <audio
+            class="audio-player"
+            ref="player3"
+            crossorigin="anonymous"
+            src="http://127.0.0.1:8000/get-audio/?path=/upload_files/2024/02/05/test2_unzip/z1_right.wav"
+            controls
+          />
+          <v-chart class="chart" :option="rightOption" autoresize />
+          <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas3" /></div>
+        </el-card>
         <!-- 添加其他需要展示的信息 -->
       </div>
       <template #footer>
@@ -151,6 +272,15 @@ defineOptions({
 
 .search-result {
   margin-top: 20px;
+  position: relative;
+}
+
+.card-download-button {
+  position: absolute;
+  top: 10px; /* 调整顶部距离以适应标题栏高度 */
+  right: 10px; /* 设置与右侧的距离 */
+  margin-right: 15px;
+  margin-bottom: 10px;
 }
 
 .no-result {
