@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
 
 from .models import Emotion
-from .serializers import EmotionSerializer
+from .serializers import EmotionSerializer, SERReportSerializer
 from apps.audio.models import Audio
 
 # Create your views here.
@@ -25,3 +25,12 @@ class EmotionViewSet(viewsets.ModelViewSet):
         
         # 否则返回所有情感项
         return Emotion.objects.all()
+
+
+# 质检报告多表视图
+class SERReportViewSet(viewsets.ModelViewSet):
+    """ 质检报告多表视图 """
+    queryset = Emotion.objects.all()
+    serializer_class = SERReportSerializer
+    http_method_names = ['get']
+    

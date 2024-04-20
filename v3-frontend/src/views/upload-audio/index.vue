@@ -39,7 +39,7 @@ if (userinfo.role !== null) {
 
 /** 上传表单数据 */
 const uploadFormData = reactive({
-  // 两个字段，file是文件类型，接收用户上传的文件，cs_user_id是字符串字段
+  // 三字段，file是文件类型，接收用户上传的文件，cs_user_id是字符串字段
   file: null,
   cs_user_id: "",
   ser_model_id: ""
