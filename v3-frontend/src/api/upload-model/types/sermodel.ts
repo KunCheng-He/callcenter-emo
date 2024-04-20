@@ -8,3 +8,5 @@ export type SERModelResponseData = {
   name: string
   path: string
 }
+
+export type ModelsData = Array<SERModelResponseData>

@@ -9,6 +9,8 @@ import { type UserData } from "@/api/user/types/user"
 import { getCSUserApi } from "@/api/user"
 import { uploadApi } from "@/api/upload-audio"
 import { getUserInfo } from "@/utils/cache/cookies"
+import { getSERModelApi } from "@/api/upload-model"
+import { SERModelResponseData } from "@/api/upload-model/types/sermodel"
 
 defineOptions({
   name: "UploadAudio"
@@ -23,24 +25,8 @@ const userinfo = getUserInfo()
 // 角色列表
 const csUserList = ref<UserData[]>([])
 
-// 模型列表(先给出虚拟数据进行展示)
-const modelList = ref([
-  {
-    id: 1,
-    name: "Light-SERNet-20230805",
-    url: "pass"
-  },
-  {
-    id: 2,
-    name: "LSTM-Transformer-20230823",
-    url: "pass"
-  },
-  {
-    id: 3,
-    name: "DPFM-20230915",
-    url: "pass"
-  }
-])
+// 模型列表
+const modelList = ref<SERModelResponseData[]>([])
 
 /** 上传表单元素的引用 */
 const uploadFormRef = ref<FormInstance | null>(null)
@@ -126,9 +112,19 @@ const getCSUsers = async () => {
   }
 }
 
+/** 获取模型列表 */
+const getModels = async () => {
+  try {
+    modelList.value = await getSERModelApi()
+  } catch (error) {
+    console.error("获取模型列表失败", error)
+  }
+}
+
 // 在页面加载前调用的方法
 onBeforeMount(() => {
   getCSUsers() // 获取客服角色列表
+  getModels() // 获取模型列表
 })
 </script>
 
