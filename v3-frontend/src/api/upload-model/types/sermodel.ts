@@ -4,7 +4,7 @@ export interface SERModelRequestData {
 }
 
 export type SERModelResponseData = {
-  id: number
+  url: number
   name: string
   path: string
 }

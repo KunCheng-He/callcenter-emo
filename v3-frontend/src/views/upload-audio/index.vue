@@ -42,12 +42,13 @@ const uploadFormData = reactive({
   // 两个字段，file是文件类型，接收用户上传的文件，cs_user_id是字符串字段
   file: null,
   cs_user_id: "",
-  model_id: ""
+  ser_model_id: ""
 })
 
 /** 表单规则校验 */
 const uploadFormRules: FormRules = {
-  cs_user_id: [{ required: true, message: "请选择文件所属的客服人员" }]
+  cs_user_id: [{ required: true, message: "请选择文件所属的客服人员" }],
+  ser_model_id: [{ required: true, message: "请选择使用的语音情感识别模型" }]
 }
 
 /** 上传文件逻辑 */
@@ -58,6 +59,7 @@ const handleUpload = () => {
       try {
         const formdata = new FormData()
         formdata.append("cs_user_id", uploadFormData.cs_user_id)
+        formdata.append("ser_model_id", uploadFormData.ser_model_id)
         formdata.append("file", uploadFormData.file)
         const response = await uploadApi(formdata)
         console.log(response)
@@ -155,8 +157,8 @@ onBeforeMount(() => {
             <el-option v-for="item in csUserList" :key="item.url" :label="item.username" :value="item.url" />
           </el-select>
         </el-form-item>
-        <el-form-item prop="model_id">
-          <el-select v-model="uploadFormData.model_id" placeholder="选择语音情感识别模型">
+        <el-form-item prop="ser_model_id">
+          <el-select v-model="uploadFormData.ser_model_id" placeholder="选择语音情感识别模型">
             <el-option v-for="item in modelList" :key="item.url" :label="item.name" :value="item.url" />
           </el-select>
         </el-form-item>
