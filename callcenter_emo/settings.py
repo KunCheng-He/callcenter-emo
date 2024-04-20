@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'apps.audio',          # 音频处理
     'apps.emotion',        # 音频情感识别
     'apps.ding_label',     # 情感标注
+    'apps.ser_model',      # 语音情感识别模型
     'drf_spectacular',     # OpenAPI
 ]
 

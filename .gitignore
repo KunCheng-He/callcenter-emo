@@ -111,3 +111,4 @@ callcenter_emo/config.py
 upload_files/
 *.pth
 cut_files/
+ser_models/

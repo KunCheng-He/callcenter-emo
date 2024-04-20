@@ -25,6 +25,7 @@ from apps.upload_events.views import UploadEventView
 from apps.audio.views import AudioViewSet, AudioFileView, AudioPartView
 from apps.emotion.views import EmotionViewSet
 from apps.ding_label.views import DingLabelView
+from apps.ser_model.views import SERModelViewSet
 
 
 # 创建 apps 里应用的路由并注册
@@ -36,6 +37,7 @@ router.register('audio', AudioViewSet)             # 音频路由
 router.register('emotion', EmotionViewSet)         # 音频情感路由
 router.register('audio-part', AudioPartView)       # 音频片段路由
 router.register('ding-label', DingLabelView)       # 情感标注路由
+router.register('ser-model', SERModelViewSet)      # 语音情感模型路由
 
 urlpatterns = [
     path('admin/', admin.site.urls),
