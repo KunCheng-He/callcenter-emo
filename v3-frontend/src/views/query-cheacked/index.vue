@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onBeforeMount } from "vue"
+import { ref, onBeforeMount, computed } from "vue"
 import {
   ElForm,
   ElFormItem,
@@ -23,9 +23,9 @@ defineOptions({
 })
 
 const searchForm = ref({
-  username: "",
-  startTime: "",
-  endTime: ""
+  username: null,
+  startTime: null,
+  endTime: null
 })
 
 const userList = ref<UserData[]>([])
@@ -33,17 +33,14 @@ const userList = ref<UserData[]>([])
 const searchResult = ref<ReportDataList[]>([])
 const searched = ref(false)
 
-const handleSearch = () => {
-  // 根据搜索条件进行搜索，这里暂时假设直接从服务器获取搜索结果
-  console.log(searchForm.value)
-  // 替换成您的实际搜索逻辑
-  searchResult.value = [
-    { fileName: "z1.mp3", kefuName: "kefu2", time: "2024-02-05", userScore: 41.33, serviceScore: 32.98 },
-    { fileName: "z2.mp3", kefuName: "kefu2", time: "2024-02-05", userScore: 39.01, serviceScore: 30.45 },
-    { fileName: "z3.mp3", kefuName: "kefu2", time: "2024-02-05", userScore: 46.21, serviceScore: 50.75 },
-    { fileName: "hello.mp3", kefuName: "kefu2", time: "2024-02-07", userScore: 29.89, serviceScore: 36.96 }
-  ]
-  searched.value = true
+const handleSearch = async () => {
+  // 根据搜索条件进行搜索
+  try {
+    searchResult.value = await getReportApi(searchForm.value)
+    searched.value = true
+  } catch (error) {
+    console.error("查询失败", error)
+  }
 }
 
 // 弹出对话框的开关
@@ -164,6 +161,18 @@ const getUserList = async () => {
   }
 }
 
+// 计算大于1的数字占比
+const EmotionsRatio = computed(() => {
+  return (Emotions) => {
+    if (!Emotions || Emotions.length === 0) {
+      return 0
+    }
+    const total = Emotions.length
+    const countAboveOne = Emotions.filter((emotion) => emotion > 1).length
+    return ((countAboveOne / total) * 100).toFixed(2)
+  }
+})
+
 // 在页面加载前调用的方法
 onBeforeMount(() => {
   getUserList() // 获取客服角色列表
@@ -178,7 +187,7 @@ onBeforeMount(() => {
       <el-form :model="searchForm" inline row>
         <el-form-item label="用户名">
           <el-select v-model="searchForm.username" placeholder="请选择">
-            <el-option v-for="user in userList" :key="user.url" :label="user.username" :value="user.url" />
+            <el-option v-for="user in userList" :key="user.username" :label="user.username" :value="user.username" />
           </el-select>
         </el-form-item>
         <el-form-item label="开始时间">
@@ -199,11 +208,19 @@ onBeforeMount(() => {
       <div v-if="searched">
         <el-button plain class="card-download-button">下载质检报告</el-button>
         <el-table :data="searchResult" border stripe>
-          <el-table-column prop="fileName" label="文件名" />
-          <el-table-column prop="kefuName" label="客服代表" />
-          <el-table-column prop="time" label="时间" />
-          <el-table-column prop="userScore" label="用户评分" />
-          <el-table-column prop="serviceScore" label="服务评分" />
+          <el-table-column prop="orig_file_path" label="文件名" />
+          <el-table-column prop="username" label="客服代表" />
+          <el-table-column prop="upload_time" label="时间" />
+          <el-table-column label="用户评分">
+            <template #default="{ row }">
+              {{ EmotionsRatio(row.left_emotions) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="服务评分">
+            <template #default="{ row }">
+              {{ EmotionsRatio(row.right_emotions) }}
+            </template>
+          </el-table-column>
           <el-table-column label="查看详情">
             <template #default="{ row }">
               <el-button plain @click="handleTableRowClick(row)">查看详情</el-button>
