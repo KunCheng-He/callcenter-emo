@@ -48,8 +48,8 @@ class SERReportViewSet(viewsets.ModelViewSet):
 
         # 如果提供了startTime和endTime，则匹配在该时间范围内的对象
         if start_time and end_time:
-            start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
-            end_time = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+            start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S.%fZ").date()
+            end_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ").date()
             query = query.filter(audio_id__upload_event_id__upload_time__range=(start_time, end_time))
 
         return query
