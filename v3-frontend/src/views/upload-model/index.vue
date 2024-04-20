@@ -5,7 +5,7 @@ import { UploadFilled } from "@element-plus/icons-vue"
 import { type FormInstance, type FormRules } from "element-plus"
 import { ElMessage } from "element-plus"
 import { reactive } from "vue"
-import { uploadApi } from "@/api/upload-audio"
+import { serModelApi } from "@/api/upload-model"
 
 defineOptions({
   name: "UploadModel"
@@ -20,14 +20,14 @@ const uploadFormRef = ref<FormInstance | null>(null)
 
 /** 上传表单数据 */
 const uploadFormData = reactive({
-  // 两个字段，file是文件类型，接收用户上传的文件，model_id是字符串字段
+  // 两个字段，file是文件类型，接收用户上传的文件，name 是模型名称
   file: null,
-  model_id: ""
+  name: ""
 })
 
 /** 表单规则校验 */
 const uploadFormRules: FormRules = {
-  cs_user_id: [{ required: true, message: "请选择文件所属的客服人员" }]
+  name: [{ required: true, message: "请输入模型名称" }]
 }
 
 /** 上传文件逻辑 */
@@ -37,9 +37,10 @@ const handleUpload = () => {
       loading.value = true
       try {
         const formdata = new FormData()
-        formdata.append("cs_user_id", uploadFormData.cs_user_id)
-        formdata.append("file", uploadFormData.file)
-        const response = await uploadApi(formdata)
+        formdata.append("name", uploadFormData.name)
+        formdata.append("path", uploadFormData.file)
+        console.log(formdata)
+        const response = await serModelApi(formdata)
         console.log(response)
         router.push({ path: "/" })
         ElMessage.success("上传成功")
@@ -66,7 +67,7 @@ const exceedProcess = () => {
 
 /** 上传文件之前额外的文件类型校验 */
 const beforeUpload = (file: File) => {
-  const allowedExtensions = ["pth",]
+  const allowedExtensions = ["pth"]
   const fileExtension = file.name.split(".").pop().toLowerCase()
 
   // 文件类型校验
@@ -101,8 +102,8 @@ const beforeUpload = (file: File) => {
             </template>
           </el-upload>
         </el-form-item>
-        <el-form-item prop="model_id">
-          <el-input v-model="uploadFormData.model_id" placeholder="请输入模型名称（如：CNN-20240101）" clearable />
+        <el-form-item prop="name">
+          <el-input v-model="uploadFormData.name" placeholder="请输入模型名称（如：CNN-20240101）" clearable />
         </el-form-item>
         <el-button :loading="loading" type="primary" size="large" @click.prevent="handleUpload"
           >上传模型参数文件</el-button
