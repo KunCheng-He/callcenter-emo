@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
+from datetime import datetime
 
 from .models import Emotion
 from .serializers import EmotionSerializer, SERReportSerializer
 from apps.audio.models import Audio
+from apps.accounts.models import CustomUser
 
 # Create your views here.
 
@@ -33,4 +35,22 @@ class SERReportViewSet(viewsets.ModelViewSet):
     queryset = Emotion.objects.all()
     serializer_class = SERReportSerializer
     http_method_names = ['get']
+
+    def get_queryset(self):
+        query = Emotion.objects.all()
+        username = self.request.query_params.get('username', None)
+        start_time = self.request.query_params.get('startTime', None)
+        end_time = self.request.query_params.get('endTime', None)
+        
+        # 如果提供了username，则过滤出匹配的对象
+        if username is not None:
+            query = query.filter(audio_id__upload_event_id__cs_user_id__username=username)
+
+        # 如果提供了startTime和endTime，则匹配在该时间范围内的对象
+        if start_time and end_time:
+            start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+            end_time = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+            query = query.filter(audio_id__upload_event_id__upload_time__range=(start_time, end_time))
+
+        return query
     
