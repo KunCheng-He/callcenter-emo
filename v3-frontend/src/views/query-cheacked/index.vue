@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from "vue"
+import { ref, onBeforeMount } from "vue"
 import {
   ElForm,
   ElFormItem,
@@ -13,14 +13,14 @@ import {
   ElDialog,
   ElMessageBox
 } from "element-plus"
+import { getCSUserApi } from "@/api/user"
+import { type UserData } from "@/api/user/types/user"
+import { getReportApi } from "@/api/report"
+import { ReportDataList } from "@/api/report/types/report"
 
-interface SearchResult {
-  fileName: string
-  kefuName: string
-  time: string
-  userScore: number
-  serviceScore: number
-}
+defineOptions({
+  name: "QueryChecked"
+})
 
 const searchForm = ref({
   username: "",
@@ -28,17 +28,14 @@ const searchForm = ref({
   endTime: ""
 })
 
-const userList = ref([
-  { id: "1", username: "kefu0" },
-  { id: "2", username: "kefu1" },
-  { id: "3", username: "kefu2" }
-])
+const userList = ref<UserData[]>([])
 
-const searchResult = ref<SearchResult[]>([])
+const searchResult = ref<ReportDataList[]>([])
 const searched = ref(false)
 
 const handleSearch = () => {
   // 根据搜索条件进行搜索，这里暂时假设直接从服务器获取搜索结果
+  console.log(searchForm.value)
   // 替换成您的实际搜索逻辑
   searchResult.value = [
     { fileName: "z1.mp3", kefuName: "kefu2", time: "2024-02-05", userScore: 41.33, serviceScore: 32.98 },
@@ -158,8 +155,18 @@ const rightOption = ref({
   ]
 })
 
-defineOptions({
-  name: "QueryChecked"
+/** 获取客服用户列表 */
+const getUserList = async () => {
+  try {
+    userList.value = await getCSUserApi()
+  } catch (error) {
+    console.error("获取客服用户列表失败", error)
+  }
+}
+
+// 在页面加载前调用的方法
+onBeforeMount(() => {
+  getUserList() // 获取客服角色列表
 })
 </script>
 
@@ -171,7 +178,7 @@ defineOptions({
       <el-form :model="searchForm" inline row>
         <el-form-item label="用户名">
           <el-select v-model="searchForm.username" placeholder="请选择">
-            <el-option v-for="user in userList" :key="user.id" :label="user.username" :value="user.id" />
+            <el-option v-for="user in userList" :key="user.url" :label="user.username" :value="user.url" />
           </el-select>
         </el-form-item>
         <el-form-item label="开始时间">
