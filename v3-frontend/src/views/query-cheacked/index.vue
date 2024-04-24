@@ -13,10 +13,18 @@ import {
   ElDialog,
   ElMessageBox
 } from "element-plus"
+import { useAVLine } from "vue-audio-visual"
+import { use } from "echarts/core"
+import { LineChart } from "echarts/charts"
+import { TitleComponent, GridComponent, TooltipComponent } from "echarts/components"
+import { CanvasRenderer } from "echarts/renderers"
+import VChart from "vue-echarts"
 import { getCSUserApi } from "@/api/user"
 import { type UserData } from "@/api/user/types/user"
 import { getReportApi } from "@/api/report"
-import { ReportDataList } from "@/api/report/types/report"
+import { ReportDataList, ReportData } from "@/api/report/types/report"
+
+use([TitleComponent, LineChart, CanvasRenderer, GridComponent, TooltipComponent])
 
 defineOptions({
   name: "QueryChecked"
@@ -47,23 +55,46 @@ const handleSearch = async () => {
 const dialogVisible = ref(false)
 
 // 当前选中的行数据
-const selectedRow = ref<SearchResult | null>(null)
+const selectedRow = ref<ReportData | null>(null)
 
 // 处理每行查看详情的点击事件
-const handleTableRowClick = (row: SearchResult) => {
+const handleTableRowClick = (row: ReportData) => {
   selectedRow.value = row
   dialogVisible.value = true
+  getAudioUrl() // 合成音频播放连接
+  setPlayer() // 设置播放器
+  generateTimeList() // 生成时间列表
+  mapEmotion() // 映射情感
 }
 
+/** 关闭查看详情的提示 */
 const handleClose = (done: () => void) => {
   ElMessageBox.confirm("您确定要关闭此对话框吗？")
     .then(() => {
       done()
     })
-    .catch(() => {
+    .catch((error) => {
       // catch error
+      console.log("对话框关闭发生错误：", error)
     })
 }
+
+/** 音频对应的播放地址 */
+const audioOriUrl = ref("")
+const audioLeftUrl = ref("")
+const audioRightUrl = ref("")
+
+/** 音频对应的情感 */
+const leftEmotionMap = ref<string[]>([])
+const rightEmotionMap = ref<string[]>([])
+
+/** 各音乐播放器及其画布 */
+const player1 = ref(null)
+const canvas1 = ref(null)
+const player2 = ref(null)
+const canvas2 = ref(null)
+const player3 = ref(null)
+const canvas3 = ref(null)
 
 /** 音频情感图表相关 */
 const timeList = ref<string[]>([]) // 图表横坐标
@@ -108,7 +139,7 @@ const leftOption = ref({
   series: [
     {
       type: "line",
-      data: ["消极", "中立", "积极"]
+      data: leftEmotionMap
     }
   ]
 })
@@ -147,7 +178,7 @@ const rightOption = ref({
   series: [
     {
       type: "line",
-      data: ["消极", "中立", "积极"]
+      data: rightEmotionMap
     }
   ]
 })
@@ -172,6 +203,80 @@ const EmotionsRatio = computed(() => {
     return ((countAboveOne / total) * 100).toFixed(2)
   }
 })
+
+/** 合成音频后端 url */
+const getAudioUrl = () => {
+  const baseUrl = "http://127.0.0.1:8000/get-audio/?path="
+  audioOriUrl.value = baseUrl + selectedRow.value.orig_file_path
+  audioLeftUrl.value = baseUrl + selectedRow.value.left_file_path
+  audioRightUrl.value = baseUrl + selectedRow.value.right_file_path
+}
+
+/** 设置音乐播放器 */
+const setPlayer = () => {
+  useAVLine(player1, canvas1, {
+    src: audioOriUrl.value,
+    canvWidth: 600,
+    canvHeight: 120,
+    lineColor: ["#FFF", "rgb(0,255,127)", "#00f"]
+  })
+  useAVLine(player2, canvas2, {
+    src: audioLeftUrl.value,
+    canvWidth: 600,
+    canvHeight: 120,
+    lineColor: ["#FFF", "rgb(0,255,127)", "#00f"]
+  })
+  useAVLine(player3, canvas3, {
+    src: audioRightUrl.value,
+    canvWidth: 600,
+    canvHeight: 120,
+    lineColor: ["#FFF", "rgb(0,255,127)", "#00f"]
+  })
+}
+
+/** 根据情感长度生成时间列表 */
+const generateTimeList = () => {
+  if (selectedRow.value.left_emotions) {
+    const secondsList = selectedRow.value.left_emotions.map((value, index) => {
+      const timeInSeconds = 2.5 * index
+      return timeInSeconds
+    })
+
+    timeList.value = secondsList.map((seconds) => {
+      const minutes = Math.floor(seconds / 60)
+      const remainingSeconds = seconds % 60
+      return minutes > 0 ? `${minutes}分${remainingSeconds}秒` : `${remainingSeconds}秒`
+    })
+  }
+}
+
+/** 根据情感数值做映射 */
+const mapEmotion = () => {
+  if (selectedRow.value.left_emotions) {
+    leftEmotionMap.value = selectedRow.value.left_emotions.map((value) => {
+      switch (value) {
+        case 0:
+          return "积极"
+        case 1:
+          return "中立"
+        case 2:
+          return "消极"
+      }
+    })
+  }
+  if (selectedRow.value.right_emotions) {
+    rightEmotionMap.value = selectedRow.value.right_emotions.map((value) => {
+      switch (value) {
+        case 0:
+          return "积极"
+        case 1:
+          return "中立"
+        case 2:
+          return "消极"
+      }
+    })
+  }
+}
 
 // 在页面加载前调用的方法
 onBeforeMount(() => {
@@ -232,40 +337,22 @@ onBeforeMount(() => {
     </el-card>
 
     <!-- 详情弹窗 -->
-    <el-dialog v-model="dialogVisible" title="音频详细信息" width="500" :before-close="handleClose">
+    <el-dialog v-model="dialogVisible" title="音频详细信息" width="1000" :before-close="handleClose">
       <div v-if="selectedRow" class="table-container">
         <el-card shadow="never">
           <el-divider content-position="left">原始音频</el-divider>
-          <audio
-            class="audio-player"
-            ref="player1"
-            crossorigin="anonymous"
-            src="http://127.0.0.1:8000/get-audio/?path=/upload_files/2024/02/05/test2_unzip/z1.mp3"
-            controls
-          />
+          <audio class="audio-player" ref="player1" crossorigin="anonymous" :src="audioOriUrl" controls />
           <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas1" /></div>
         </el-card>
         <el-card shadow="never">
           <el-divider content-position="left">左声道音频</el-divider>
-          <audio
-            class="audio-player"
-            ref="player2"
-            crossorigin="anonymous"
-            src="http://127.0.0.1:8000/get-audio/?path=/upload_files/2024/02/05/test2_unzip/z1_left.wav"
-            controls
-          />
+          <audio class="audio-player" ref="player2" crossorigin="anonymous" :src="audioLeftUrl" controls />
           <v-chart class="chart" :option="leftOption" autoresize />
           <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas2" /></div>
         </el-card>
         <el-card shadow="never">
           <el-divider content-position="left">右声道音频</el-divider>
-          <audio
-            class="audio-player"
-            ref="player3"
-            crossorigin="anonymous"
-            src="http://127.0.0.1:8000/get-audio/?path=/upload_files/2024/02/05/test2_unzip/z1_right.wav"
-            controls
-          />
+          <audio class="audio-player" ref="player3" crossorigin="anonymous" :src="audioRightUrl" controls />
           <v-chart class="chart" :option="rightOption" autoresize />
           <div class="audio-canvas-layout"><canvas class="audio-canvas" ref="canvas3" /></div>
         </el-card>
@@ -305,6 +392,12 @@ onBeforeMount(() => {
   right: 10px; /* 设置与右侧的距离 */
   margin-right: 15px;
   margin-bottom: 10px;
+}
+
+.chart {
+  width: 100%;
+  height: 30vh;
+  margin-bottom: -50px;
 }
 
 .no-result {
