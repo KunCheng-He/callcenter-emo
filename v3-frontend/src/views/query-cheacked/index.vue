@@ -278,6 +278,29 @@ const mapEmotion = () => {
   }
 }
 
+/** 下载质检报告 */
+const downloadReport = () => {
+  // 将 searchResult 转换为 JSON 字符串
+  const jsonData = JSON.stringify(searchResult.value)
+  // 创建 Blob 对象
+  const blob = new Blob([jsonData], { type: "application/json" })
+  // 创建下载链接
+  const url = URL.createObjectURL(blob)
+  // 创建一个隐藏的 <a> 元素
+  const a = document.createElement("a")
+  a.style.display = "none"
+  a.href = url
+  a.download = "report.json" // 文件名
+  // 将 <a> 元素添加到 DOM 中
+  document.body.appendChild(a)
+  // 模拟点击下载链接
+  a.click()
+  // 移除 <a> 元素
+  document.body.removeChild(a)
+  // 释放 Blob 对象占用的 URL
+  URL.revokeObjectURL(url)
+}
+
 // 在页面加载前调用的方法
 onBeforeMount(() => {
   getUserList() // 获取客服角色列表
@@ -311,7 +334,7 @@ onBeforeMount(() => {
     <el-card class="search-result">
       <h3 class="title">质检查询结果</h3>
       <div v-if="searched">
-        <el-button plain class="card-download-button">下载质检报告</el-button>
+        <el-button plain type="primary" class="card-download-button" @click="downloadReport">下载质检报告</el-button>
         <el-table :data="searchResult" border stripe>
           <el-table-column prop="orig_file_path" label="文件名" />
           <el-table-column prop="username" label="客服代表" />
