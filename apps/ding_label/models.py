@@ -1,4 +1,4 @@
-from django.db.models import Model, ForeignKey, CASCADE, CharField, SmallIntegerField, FloatField
+from django.db.models import Model, ForeignKey, CASCADE, CharField, SmallIntegerField, FloatField, DateTimeField
 
 from apps.audio.models import AudioPart
 
@@ -12,3 +12,4 @@ class DingLabel(Model):
     text = CharField(max_length=256, unique=False, verbose_name='音频文本内容')
     pleasure = FloatField(null=False, verbose_name='愉悦维评分')
     action = FloatField(null=False, verbose_name='激活维评分')
+    ding_time = DateTimeField(auto_now_add=True, verbose_name='标注时间')

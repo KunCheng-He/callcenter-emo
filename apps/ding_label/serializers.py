@@ -7,4 +7,4 @@ from .models import DingLabel
 class DingLabelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = DingLabel
-        fields = ['url', 'audio_part_id', 'audio_role', 'emotion_label', 'text', 'pleasure', 'action']
+        fields = ['url', 'audio_part_id', 'audio_role', 'emotion_label', 'text', 'pleasure', 'action', 'ding_time']
