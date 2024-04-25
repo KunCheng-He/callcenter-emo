@@ -13,7 +13,7 @@ class DingLabelSerializer(serializers.HyperlinkedModelSerializer):
 # 剪辑导出序列化
 class DatasetExportSerializer(serializers.HyperlinkedModelSerializer):
     # 额外信息
-    audio_path = serializers.CharField(source=" audio_part_id.part_path")
+    audio_path = serializers.CharField(source="audio_part_id.part_path")
 
     class Meta:
         model = DingLabel
