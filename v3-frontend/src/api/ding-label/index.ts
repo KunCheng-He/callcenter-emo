@@ -9,3 +9,12 @@ export function addDingLabelApi(data: Ding.AddDingLabelData) {
     data: data
   })
 }
+
+/** 获取剪辑音频片段列表 */
+export function ExportQueryApi(data: any) {
+  return request<Ding.ExportData>({
+    url: "/export/",
+    method: "get",
+    params: data
+  })
+}

@@ -16,3 +16,13 @@ export type AddDingLabelData = {
   pleasure: number
   action: number
 }
+
+export interface ExportData {
+  audio_path: string
+  audio_role: string
+  emotion_label: number
+  text: string
+  pleasure: number
+  action: number
+  ding_time: string
+}
