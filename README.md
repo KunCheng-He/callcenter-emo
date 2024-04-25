@@ -39,10 +39,6 @@ vim config.py
 ```
 > `mysql` 数据库用于存储系统数据，`redis` 数据库是使用 `celery` 库在后台执行异步任务时需要。🚩特别提醒，系统访问数据库的网络需要保持稳定，不然 `celery` 再执行任务时可能因为网络不稳定而出现问题，我是在同一台机器里通过 `docker` 提供这两个服务。
 
-### 前端请求地址修改
-
-前端向后端发送请求，更具你自己的后端项目启动地址对 `v3-frontend/src/utils/service.ts` 和 `v3-frontend/src/views/check-audio/index.vue` 两个文件进行修改，第一个文件修改 `baseURL` 等，第二个文件修改 `178` 行，改为对应的后端请求地址。
-
 ### 情感识别模型参数
 
 本项目使用自己训练的 `LightSER-Net` 进行语音情感识别，需要将训练好的模型参数文件 `LightSERNet.pth` 放入到 `cc_celery/tasks/ai_ser/models_pth` 文件夹下，后期会在 `release` 界面提供一版基础的模型参数。
@@ -91,10 +87,19 @@ pnpm dev
 
 ![上传音频](./readMeFile/upload.png)
 
-+ 审查与剪辑
++ 质检查询与质检报告下载
+
+![质检查询](./readMeFile/质检查询.png)
+![查看详情](./readMeFile/查看详情.png)
+
++ 审查与剪辑(下图为前版系统，页面在当前系统的情感审查目录下，页面为改动，不重新截图)
 
 ![审查](./readMeFile/审计.png)
 ![剪辑](./readMeFile/剪辑.png)
+
++ 模型上传页面
+
+![模型上传](./readMeFile/模型上传.png)
 
 ### 三、暂时存在的问题
 
