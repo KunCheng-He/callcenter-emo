@@ -24,7 +24,7 @@ from apps.accounts.views import UserRoleViewSet, UserViewSet, LoginView
 from apps.upload_events.views import UploadEventView
 from apps.audio.views import AudioViewSet, AudioFileView, AudioPartView
 from apps.emotion.views import EmotionViewSet, SERReportViewSet
-from apps.ding_label.views import DingLabelView
+from apps.ding_label.views import DingLabelView, ExportView
 from apps.ser_model.views import SERModelViewSet
 
 
@@ -39,6 +39,7 @@ router.register('audio-part', AudioPartView)       # 音频片段路由
 router.register('ding-label', DingLabelView)       # 情感标注路由
 router.register('ser-model', SERModelViewSet)      # 语音情感模型路由
 router.register('ser-report', SERReportViewSet)    # 质检报告路由
+router.register('export', ExportView)              # 语料库导出路由
 
 urlpatterns = [
     path('admin/', admin.site.urls),
