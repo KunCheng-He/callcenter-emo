@@ -18,11 +18,13 @@ def get_upload_event_info(orig_data: dict):
     - event_id: 事件ID
     - cs_user_id: 用户ID
     - file_path: 文件路径
+    - model_id: 模型ID
     """
     event_id = int(re.findall(r'\d+', orig_data['url'])[-1])
     cs_user_id = int(re.findall(r'\d+', orig_data['cs_user_id'])[-1])
     file_path = orig_data['file'].split("/upload_files/")[-1]
-    return event_id, cs_user_id, file_path
+    model_id = int(re.findall(r'\d+', orig_data['ser_model_id'])[-1])
+    return event_id, cs_user_id, file_path, model_id
 
 
 def mp3_separate_left_right(file_path: str):

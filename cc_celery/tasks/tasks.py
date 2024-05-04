@@ -8,6 +8,7 @@ from .ai_ser.recognition import recognize_sentiment
 from apps.audio.models import Audio, AudioPart
 from apps.emotion.models import Emotion
 from apps.accounts.models import CustomUser
+from apps.ser_model.models import SERModel
 
 
 @app.task
@@ -16,7 +17,7 @@ def audio_process(upload_dict: dict):
     根据上传事件得到的实例，处理上传文件，加入音频表中
     """
     # 获取上传事件实例中的数据
-    event_id, cs_user_id, file_path = get_upload_event_info(upload_dict)
+    event_id, cs_user_id, file_path, model_id  = get_upload_event_info(upload_dict)
     # 还原完整文件路径
     file_full_path = os.path.join(os.getcwd(), "upload_files", file_path)
     # 获取文件类型，根据类型不同进行不同处理
@@ -25,7 +26,7 @@ def audio_process(upload_dict: dict):
         # 处理mp3格式的文件
         audio_id = mp3_add_database(event_id, file_full_path, cs_user_id)
         # 识别音频情感
-        emotion_recognition.delay(audio_id, cs_user_id)
+        emotion_recognition.delay(audio_id, cs_user_id, model_id)
         return f"event_id:{event_id} audio add database, filename:{file_path}"
     elif file_type == '.zip':
         # 处理zip格式的文件
@@ -36,7 +37,7 @@ def audio_process(upload_dict: dict):
                     mp3_file_path = os.path.join(root, file)
                     audio_id = mp3_add_database(event_id, mp3_file_path, cs_user_id)
                     # 识别音频情感
-                    emotion_recognition.delay(audio_id, cs_user_id)
+                    emotion_recognition.delay(audio_id, cs_user_id, model_id)
         return f"event_id:{event_id} zip file unzip and audio add database, zipname:{file_path}"
     else:
         # 其他格式的文件代表有误
@@ -45,7 +46,7 @@ def audio_process(upload_dict: dict):
 
 
 @app.task
-def emotion_recognition(audio_id: int, user_id: int):
+def emotion_recognition(audio_id: int, user_id: int, model_id: int):
     """
     情感识别任务，根据给定的音频id进行情感识别，并将结果写入情感数据库
     """
@@ -53,9 +54,12 @@ def emotion_recognition(audio_id: int, user_id: int):
     audio_object = Audio.objects.get(id=audio_id)
     left_path = os.path.join(os.getcwd(), audio_object.left_file_path[1:])
     right_path = os.path.join(os.getcwd(), audio_object.right_file_path[1:])
+    # 获取模型完整路径
+    ser_model = SERModel.objects.get(id=model_id)
+    model_path = os.path.join(os.getcwd(), str(ser_model.path))
     # 情感识别
-    left_emotions = recognize_sentiment(left_path)
-    right_emotions = recognize_sentiment(right_path)
+    left_emotions = recognize_sentiment(left_path, model_path)
+    right_emotions = recognize_sentiment(right_path, model_path)
     frame_num = len(left_emotions)
     # 写入情感数据库
     emotion_object = Emotion.objects.create(
