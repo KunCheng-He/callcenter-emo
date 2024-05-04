@@ -10,12 +10,20 @@
 
 安装前置依赖
 ```shell
-sudo dnf install mysql-devel
-sudo dnf install ffmpeg
+# fedora
+sudo dnf install mysql-devel ffmpeg
+
+# debian
+sudo apt install libmariadb-dev ffmpeg
 ```
 > 🚨 AI 提示可以使用以上命令安装 `ffmpeg` ，但我没有成功，提示没有这个包，可以访问[ffmpeg官网](https://ffmpeg.org/download.html)复制命令下载源码，然后参考这篇[CSDN博客](https://blog.csdn.net/PYJTRK/article/details/122846864)通过源码编译安装
 
-安装 `python` 环境 和 `nodejs`，推荐使用 `nvm` 来安装 `nodejs`
+克隆本仓库
+```shell
+git clone https://github.com/KunCheng-He/callcenter-emo.git
+```
+
+安装 `python` 环境 和 `nodejs`，推荐使用 `nvm` 来安装 `nodejs`，`python` 推荐使用 `conda` 进行创建，我使用的版本是 `3.10.13`，你可以执行 `conda create -n cc-emo python=3.10` 来创建环境，之后执行 `conda activate cc-emo` 来激活环境，再执行以下命令来安装依赖
 ```shell
 pip install -r requirements.txt
 
@@ -31,7 +39,7 @@ pip install torch==2.0.0 torchaudio==2.0.1 --index-url https://download.pytorch.
 
 ### 数据库配置
 
-启动项目需要配置 `mysql` 和 `redis` 数据库，配置模板文件在 `/callcenter_emo/config-demo.py` 下，执行以下复制命令，在 `config.py` 文件中填写你自己的数据库配置
+启动项目需要配置 `mysql` 和 `redis` 数据库，配置模板文件在 `/callcenter_emo/config-demo.py` 下，执行以下复制命令，在 `config.py` 文件中填写你自己的数据库配置（📌如果你还有创建数据库服务，请先安装对应的数据库服务，可以通过 `docker` 命令快速的启动数据库服务，具体命令这里不再详细赘述）
 ```shell
 cd callcenter_emo
 cp config-demo.py config.py
