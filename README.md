@@ -41,7 +41,7 @@ vim config.py
 
 ### 情感识别模型参数
 
-本项目使用自己训练的 `LightSER-Net` 进行语音情感识别，需要将训练好的模型参数文件 `LightSERNet.pth` 放入到 `cc_celery/tasks/ai_ser/models_pth` 文件夹下，后期会在 `release` 界面提供一版基础的模型参数。
+> 📌进入系统后务必先上传模型参数文件，之后再上传音频文件进行识别📌📌📌
 
 ### 启动项目
 
